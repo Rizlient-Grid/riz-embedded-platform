@@ -32,7 +32,15 @@ namespace {
 
 riz::coro::task<int, void> simple_coro()
 {
+    std::cout << "here" << std::endl;
     co_return 0;
+}
+
+riz::coro::task<int, void> simple_coro2()
+{
+    int rc = co_await simple_coro();
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    co_return rc;
 }
 
 } // namespace
@@ -42,4 +50,30 @@ TEST(TaskTest, ConstructsFromCoroutine)
     auto t = simple_coro();
     t.resume();
     EXPECT_EQ(t.get_handle().done(), true);
+}
+
+TEST(TaskTest, CoawaitAnotherTask)
+{
+    auto coro = []() -> riz::coro::task<int, void> {
+        int rc = co_await simple_coro();
+        std::cout << "here2" << std::endl;
+        co_return rc;
+    };
+
+    auto task = coro();
+    task.resume();
+    EXPECT_EQ(task.get_handle().done(), true);
+}
+
+TEST(TaskTest, CoawaitChainedTasks)
+{
+    auto coro = []() -> riz::coro::task<int, void> {
+        int rc = co_await simple_coro2();
+        std::cout << "here2" << std::endl;
+        co_return rc;
+    };
+
+    auto task = coro();
+    task.resume();
+    EXPECT_EQ(task.get_handle().done(), true);
 }

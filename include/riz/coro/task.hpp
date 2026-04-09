@@ -13,7 +13,9 @@ template<typename Pull, typename Push>
 class task : noncopyable
 {
 public:
-    using promise_type = promise<Pull, Push>;
+    using pull_type = Pull;
+    using push_type = Push;
+    using promise_type = promise<pull_type, push_type>;
 
     explicit task(std::coroutine_handle<promise_type> handle)
         : handle_(handle)

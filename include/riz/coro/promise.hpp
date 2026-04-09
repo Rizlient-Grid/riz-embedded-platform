@@ -14,9 +14,10 @@ struct promise_base
     using task_type = task<Pull, Push>;
     using push_type = Push;
     using pull_type = Pull;
-    using final_awaiter_type = final_awaiter<pull_type, push_type>;
     using promise_derived = PromiseDerived;
     
+    std::coroutine_handle<> continuation_;
+
     task_type get_return_object()
     {
         auto handle = std::coroutine_handle<promise_derived>::from_promise(
@@ -29,13 +30,19 @@ struct promise_base
         return {};
     }
 
-    final_awaiter_type final_suspend() noexcept
+    auto final_suspend() noexcept
     {
-        return {};
+        return final_awaiter { continuation_ };
     }
 
     void unhandled_exception()
     {
+    }
+
+    template<template<typename, typename> typename Task, typename T, typename U>
+    auto await_transform(Task<T, U>&& awaitable)
+    {
+        return task_awaiter<Task<T, U>>{ awaitable };
     }
 };
 
