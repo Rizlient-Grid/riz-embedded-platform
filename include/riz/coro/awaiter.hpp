@@ -23,9 +23,12 @@ struct final_awaiter
         return false;
     }
 
-    std::coroutine_handle<promise_type> await_suspend(std::coroutine_handle<> h) noexcept
+    std::coroutine_handle<> await_suspend(std::coroutine_handle<> h) noexcept
     {
-        return continuation_;
+        if (continuation_) {
+            return continuation_;
+        }
+        return std::noop_coroutine();
     }
 
     void await_resume() noexcept

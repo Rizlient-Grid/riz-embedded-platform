@@ -25,6 +25,16 @@ public:
         handle_.destroy();
     }
 
+    void resume()
+    {
+        handle_.resume();
+    }
+
+    std::coroutine_handle<promise_type> get_handle()
+    {
+        return handle_;
+    }
+
 private:
     std::coroutine_handle<promise_type> handle_;
 };
