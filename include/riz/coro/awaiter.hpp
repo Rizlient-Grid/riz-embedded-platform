@@ -4,15 +4,17 @@
 
 namespace riz::coro {
 
-template<typename Pull, typename Push> struct promise;
-template<typename Pull, typename Push> struct task;
+template<typename Pull, typename Push>
+struct promise;
+template<typename Pull, typename Push>
+struct task;
 
 struct final_awaiter
 {
     final_awaiter() = delete;
-    
+
     explicit final_awaiter(std::coroutine_handle<> continuation)
-        : continuation_ { continuation }
+        : continuation_ {continuation}
     {
     }
 
@@ -29,9 +31,7 @@ struct final_awaiter
         return std::noop_coroutine();
     }
 
-    void await_resume() noexcept
-    {
-    }
+    void await_resume() noexcept {}
 
     std::coroutine_handle<> continuation_;
 };
@@ -42,12 +42,12 @@ struct task_awaiter
     using task_type = Task;
 
     task_type& task_;
-    
+
     explicit task_awaiter(task_type& task)
         : task_(task)
     {
     }
-    
+
     bool await_ready() const noexcept
     {
         return false;

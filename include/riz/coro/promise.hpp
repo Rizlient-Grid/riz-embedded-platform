@@ -15,14 +15,14 @@ struct promise_base
     using push_type = Push;
     using pull_type = Pull;
     using promise_derived = PromiseDerived;
-    
+
     std::coroutine_handle<> continuation_;
 
     task_type get_return_object()
     {
         auto handle = std::coroutine_handle<promise_derived>::from_promise(
             static_cast<promise_derived&>(*this));
-        return task_type { handle };
+        return task_type {handle};
     }
 
     std::suspend_always initial_suspend() noexcept
@@ -32,17 +32,15 @@ struct promise_base
 
     auto final_suspend() noexcept
     {
-        return final_awaiter { continuation_ };
+        return final_awaiter {continuation_};
     }
 
-    void unhandled_exception()
-    {
-    }
+    void unhandled_exception() {}
 
     template<template<typename, typename> typename Task, typename T, typename U>
     auto await_transform(Task<T, U>&& awaitable)
     {
-        return task_awaiter<Task<T, U>>{ awaitable };
+        return task_awaiter<Task<T, U>> {awaitable};
     }
 };
 
@@ -69,9 +67,7 @@ struct promise : promise_base<Pull, Push, promise<Pull, Push>>
 template<typename Push>
 struct promise<void, Push> : promise_base<void, Push, promise<void, Push>>
 {
-    void return_void() noexcept
-    {
-    }
+    void return_void() noexcept {}
 };
 
 } // namespace riz::coro
