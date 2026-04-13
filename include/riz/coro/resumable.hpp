@@ -2,6 +2,7 @@
 
 #include <riz/constraints.h>
 
+#include <cassert>
 #include <coroutine>
 
 namespace riz::coro {
@@ -26,7 +27,7 @@ struct resumable_trait
 };
 
 template<ResumableTrait Trait>
-class resumable : public noncopyable
+class resumable : public moveonly
 {
 public:
     using resumable_trait_type = Trait;
@@ -43,8 +44,13 @@ public:
         handle_.destroy();
     }
 
+    resumable(resumable&&) = default;
+
+    resumable& operator=(resumable&&) = default;
+
     void resume()
     {
+        assert(!handle_.done());
         handle_.resume();
     }
 

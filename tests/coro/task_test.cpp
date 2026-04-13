@@ -22,8 +22,8 @@ TEST(TaskTest, MoveSemantics)
     using T = riz::coro::task<int>;
     static_assert(!std::is_copy_constructible_v<T>);
     static_assert(!std::is_copy_assignable_v<T>);
-    static_assert(!std::is_move_constructible_v<T>);
-    static_assert(!std::is_move_assignable_v<T>);
+    static_assert(std::is_move_constructible_v<T>);
+    static_assert(std::is_move_assignable_v<T>);
 }
 
 namespace {

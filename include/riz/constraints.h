@@ -9,4 +9,13 @@ struct noncopyable
     noncopyable& operator=(const noncopyable&) = delete;
 };
 
+struct moveonly
+{
+    moveonly() = default;
+    moveonly(moveonly&&) = default;
+    moveonly(const moveonly&) = delete;
+    moveonly& operator=(moveonly&&) = default;
+    moveonly& operator=(const moveonly&) = delete;
+};
+
 } // namespace riz

@@ -43,7 +43,8 @@ struct resumable_awaiter
 
     resumable_type& resumable_;
 
-    explicit resumable_awaiter(resumable_type& r)
+    template<typename T>
+    explicit resumable_awaiter(T&& r)
         : resumable_(r)
     {
     }

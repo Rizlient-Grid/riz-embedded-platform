@@ -4,6 +4,7 @@
 #include <riz/coro/resumable.hpp>
 
 #include <coroutine>
+#include <exception>
 #include <type_traits>
 
 namespace riz::coro {
@@ -34,12 +35,15 @@ struct promise
         return final_awaiter {continuation_};
     }
 
-    void unhandled_exception() {}
+    void unhandled_exception() noexcept
+    {
+        std::terminate();
+    }
 
     template<Resumable T>
     auto await_transform(T&& awaitable)
     {
-        return resumable_awaiter<T> {awaitable};
+        return resumable_awaiter<T>{awaitable};
     }
 };
 
