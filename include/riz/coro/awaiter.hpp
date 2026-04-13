@@ -11,8 +11,7 @@ struct promise;
 template<typename T>
 struct task;
 
-struct final_awaiter
-{
+struct final_awaiter {
     explicit final_awaiter(std::coroutine_handle<> continuation)
         : continuation_ {continuation}
     {
@@ -37,8 +36,7 @@ struct final_awaiter
 };
 
 template<typename Resumable>
-struct resumable_awaiter
-{
+struct resumable_awaiter {
     using resumable_type = Resumable;
 
     resumable_type& resumable_;

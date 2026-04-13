@@ -10,8 +10,7 @@
 namespace riz::coro {
 
 template<ResumableTrait Trait>
-struct promise
-{
+struct promise {
     using resumable_trait_type = Trait;
     using resumable_type = resumable_trait_type::resumable_type;
     using promise_type = resumable_trait_type::promise_type;
@@ -20,8 +19,8 @@ struct promise
 
     resumable_type get_return_object()
     {
-        auto handle = std::coroutine_handle<promise_type>::from_promise(
-            static_cast<promise_type&>(*this));
+        auto handle =
+            std::coroutine_handle<promise_type>::from_promise(static_cast<promise_type&>(*this));
         return resumable_type {handle};
     }
 
@@ -43,7 +42,7 @@ struct promise
     template<Resumable T>
     auto await_transform(T&& awaitable)
     {
-        return resumable_awaiter<T>{awaitable};
+        return resumable_awaiter<T> {awaitable};
     }
 };
 

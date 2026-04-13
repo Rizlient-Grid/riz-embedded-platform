@@ -1,7 +1,7 @@
 #pragma once
 
-#include <riz/coro/resumable.hpp>
 #include <riz/coro/promise.hpp>
+#include <riz/coro/resumable.hpp>
 
 #include <coroutine>
 
@@ -16,21 +16,19 @@ template<typename T>
 using task_trait = resumable_trait<task<T>, task_promise<T>>;
 
 template<typename T>
-class task : public resumable<task_trait<T>>
-{
+class task : public resumable<task_trait<T>> {
 public:
     using return_type = T;
     using promise_type = task_promise<return_type>;
 
     explicit task(std::coroutine_handle<promise_type> handle)
-        : resumable<task_trait<T>> { handle }
+        : resumable<task_trait<T>> {handle}
     {
     }
 };
 
 template<typename T>
-struct task_promise : promise<task_trait<T>>
-{
+struct task_promise : promise<task_trait<T>> {
     using resumable_type = task<T>;
 
     resumable_type::return_type value_;
@@ -42,8 +40,7 @@ struct task_promise : promise<task_trait<T>>
 };
 
 template<>
-struct task_promise<void> : promise<task_trait<void>>
-{
+struct task_promise<void> : promise<task_trait<void>> {
     using resumable_type = task<void>;
 
     void return_void() noexcept {}

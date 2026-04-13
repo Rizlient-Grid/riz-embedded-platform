@@ -20,22 +20,20 @@ concept ResumableTrait = requires {
 };
 
 template<typename Resumable, typename Promise>
-struct resumable_trait
-{
+struct resumable_trait {
     using resumable_type = Resumable;
     using promise_type = Promise;
 };
 
 template<ResumableTrait Trait>
-class resumable : public moveonly
-{
+class resumable : public moveonly {
 public:
     using resumable_trait_type = Trait;
     using promise_type = resumable_trait_type::promise_type;
     static constexpr bool tag_is_resumable = true;
 
     explicit resumable(std::coroutine_handle<promise_type> h)
-        : handle_{h}
+        : handle_ {h}
     {
     }
 

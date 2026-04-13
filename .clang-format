@@ -21,12 +21,12 @@ BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterCaseLabel:  false
-  AfterClass:      true
+  AfterClass:      false
   AfterControlStatement: false
   AfterEnum:       true
   AfterFunction:   true
   AfterNamespace:  false
-  AfterStruct:     true
+  AfterStruct:     false
   AfterUnion:      true
   BeforeCatch:     false
   BeforeElse:      false

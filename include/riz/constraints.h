@@ -2,15 +2,13 @@
 
 namespace riz {
 
-struct noncopyable
-{
+struct noncopyable {
     noncopyable() = default;
     noncopyable(const noncopyable&) = delete;
     noncopyable& operator=(const noncopyable&) = delete;
 };
 
-struct moveonly
-{
+struct moveonly {
     moveonly() = default;
     moveonly(moveonly&&) = default;
     moveonly(const moveonly&) = delete;
