@@ -9,17 +9,17 @@
 TEST(TaskTest, HasCorrectPromiseType)
 {
     static_assert(
-        std::is_same_v<riz::coro::task<int, void>::promise_type, riz::coro::promise<int, void>>);
+        std::is_same_v<riz::coro::task<int>::promise_type, riz::coro::task_promise<int>>);
 }
 
 TEST(TaskTest, SizeIsOnePointer)
 {
-    EXPECT_EQ(sizeof(riz::coro::task<int, void>), sizeof(void*));
+    EXPECT_EQ(sizeof(riz::coro::task<int>), sizeof(void*));
 }
 
 TEST(TaskTest, MoveSemantics)
 {
-    using T = riz::coro::task<int, void>;
+    using T = riz::coro::task<int>;
     static_assert(!std::is_copy_constructible_v<T>);
     static_assert(!std::is_copy_assignable_v<T>);
     static_assert(!std::is_move_constructible_v<T>);
@@ -28,13 +28,13 @@ TEST(TaskTest, MoveSemantics)
 
 namespace {
 
-riz::coro::task<int, void> simple_coro()
+riz::coro::task<int> simple_coro()
 {
     std::cout << "here" << std::endl;
     co_return 0;
 }
 
-riz::coro::task<int, void> simple_coro2()
+riz::coro::task<int> simple_coro2()
 {
     int rc = co_await simple_coro();
     std::cout << __PRETTY_FUNCTION__ << std::endl;
@@ -47,12 +47,12 @@ TEST(TaskTest, ConstructsFromCoroutine)
 {
     auto t = simple_coro();
     t.resume();
-    EXPECT_EQ(t.get_handle().done(), true);
+    EXPECT_EQ(t.handle().done(), true);
 }
 
 TEST(TaskTest, CoawaitAnotherTask)
 {
-    auto coro = []() -> riz::coro::task<int, void> {
+    auto coro = []() -> riz::coro::task<int> {
         int rc = co_await simple_coro();
         std::cout << "here2" << std::endl;
         co_return rc;
@@ -60,12 +60,12 @@ TEST(TaskTest, CoawaitAnotherTask)
 
     auto task = coro();
     task.resume();
-    EXPECT_EQ(task.get_handle().done(), true);
+    EXPECT_EQ(task.handle().done(), true);
 }
 
 TEST(TaskTest, CoawaitChainedTasks)
 {
-    auto coro = []() -> riz::coro::task<int, void> {
+    auto coro = []() -> riz::coro::task<int> {
         int rc = co_await simple_coro2();
         std::cout << "here2" << std::endl;
         co_return rc;
@@ -73,5 +73,5 @@ TEST(TaskTest, CoawaitChainedTasks)
 
     auto task = coro();
     task.resume();
-    EXPECT_EQ(task.get_handle().done(), true);
+    EXPECT_EQ(task.handle().done(), true);
 }

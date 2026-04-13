@@ -1,18 +1,18 @@
 #pragma once
 
+#include <riz/coro/resumable.hpp>
+
 #include <coroutine>
 
 namespace riz::coro {
 
-template<typename Pull, typename Push>
+template<ResumableTrait T>
 struct promise;
-template<typename Pull, typename Push>
+template<typename T>
 struct task;
 
 struct final_awaiter
 {
-    final_awaiter() = delete;
-
     explicit final_awaiter(std::coroutine_handle<> continuation)
         : continuation_ {continuation}
     {
@@ -36,15 +36,15 @@ struct final_awaiter
     std::coroutine_handle<> continuation_;
 };
 
-template<typename Task>
-struct task_awaiter
+template<typename Resumable>
+struct resumable_awaiter
 {
-    using task_type = Task;
+    using resumable_type = Resumable;
 
-    task_type& task_;
+    resumable_type& resumable_;
 
-    explicit task_awaiter(task_type& task)
-        : task_(task)
+    explicit resumable_awaiter(resumable_type& r)
+        : resumable_(r)
     {
     }
 
@@ -55,13 +55,15 @@ struct task_awaiter
 
     std::coroutine_handle<> await_suspend(std::coroutine_handle<> h) noexcept
     {
-        task_.get_handle().promise().continuation_ = h;
-        return task_.get_handle();
+        resumable_.handle().promise().continuation_ = h;
+        return resumable_.handle();
     }
 
-    task_type::pull_type await_resume() noexcept
+    resumable_type::return_type await_resume() noexcept
     {
-        return std::move(task_.get_handle().promise().value_);
+        if constexpr (!std::is_void_v<typename resumable_type::return_type>) {
+            return std::move(resumable_.handle().promise().value_);
+        }
     }
 };
 

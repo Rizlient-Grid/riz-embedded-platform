@@ -1,0 +1,60 @@
+#pragma once
+
+#include <riz/constraints.h>
+
+#include <coroutine>
+
+namespace riz::coro {
+
+template<typename T>
+concept Resumable = requires {
+    typename T::promise_type;
+    requires T::tag_is_resumable;
+};
+
+template<typename T>
+concept ResumableTrait = requires {
+    typename T::resumable_type;
+    typename T::promise_type;
+};
+
+template<typename Resumable, typename Promise>
+struct resumable_trait
+{
+    using resumable_type = Resumable;
+    using promise_type = Promise;
+};
+
+template<ResumableTrait Trait>
+class resumable : public noncopyable
+{
+public:
+    using resumable_trait_type = Trait;
+    using promise_type = resumable_trait_type::promise_type;
+    static constexpr bool tag_is_resumable = true;
+
+    explicit resumable(std::coroutine_handle<promise_type> h)
+        : handle_{h}
+    {
+    }
+
+    ~resumable()
+    {
+        handle_.destroy();
+    }
+
+    void resume()
+    {
+        handle_.resume();
+    }
+
+    std::coroutine_handle<promise_type> handle() noexcept
+    {
+        return handle_;
+    }
+
+private:
+    std::coroutine_handle<promise_type> handle_;
+};
+
+} // namespace riz::coro

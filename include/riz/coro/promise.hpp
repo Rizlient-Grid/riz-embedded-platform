@@ -1,28 +1,27 @@
 #pragma once
 
-#include "awaiter.hpp"
-#include "task.hpp"
+#include <riz/coro/awaiter.hpp>
+#include <riz/coro/resumable.hpp>
 
 #include <coroutine>
 #include <type_traits>
 
 namespace riz::coro {
 
-template<typename Pull, typename Push, typename PromiseDerived>
-struct promise_base
+template<ResumableTrait Trait>
+struct promise
 {
-    using task_type = task<Pull, Push>;
-    using push_type = Push;
-    using pull_type = Pull;
-    using promise_derived = PromiseDerived;
+    using resumable_trait_type = Trait;
+    using resumable_type = resumable_trait_type::resumable_type;
+    using promise_type = resumable_trait_type::promise_type;
 
     std::coroutine_handle<> continuation_;
 
-    task_type get_return_object()
+    resumable_type get_return_object()
     {
-        auto handle = std::coroutine_handle<promise_derived>::from_promise(
-            static_cast<promise_derived&>(*this));
-        return task_type {handle};
+        auto handle = std::coroutine_handle<promise_type>::from_promise(
+            static_cast<promise_type&>(*this));
+        return resumable_type {handle};
     }
 
     std::suspend_always initial_suspend() noexcept
@@ -37,37 +36,11 @@ struct promise_base
 
     void unhandled_exception() {}
 
-    template<template<typename, typename> typename Task, typename T, typename U>
-    auto await_transform(Task<T, U>&& awaitable)
+    template<Resumable T>
+    auto await_transform(T&& awaitable)
     {
-        return task_awaiter<Task<T, U>> {awaitable};
+        return resumable_awaiter<T> {awaitable};
     }
-};
-
-template<typename Pull, typename Push>
-struct promise : promise_base<Pull, Push, promise<Pull, Push>>
-{
-    using pull_type = Pull;
-    using push_type = Push;
-
-    pull_type value_;
-
-    std::suspend_always yield_value(pull_type&& value) noexcept
-    {
-        value_ = std::move(value);
-        return {};
-    }
-
-    void return_value(pull_type&& value)
-    {
-        value_ = std::move(value);
-    }
-};
-
-template<typename Push>
-struct promise<void, Push> : promise_base<void, Push, promise<void, Push>>
-{
-    void return_void() noexcept {}
 };
 
 } // namespace riz::coro

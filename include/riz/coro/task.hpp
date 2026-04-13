@@ -1,44 +1,52 @@
 #pragma once
 
-#include "riz/constraints.h"
+#include <riz/coro/resumable.hpp>
+#include <riz/coro/promise.hpp>
 
 #include <coroutine>
 
 namespace riz::coro {
 
-template<typename Pull, typename Push>
-struct promise;
+template<typename T>
+class task;
+template<typename T>
+struct task_promise;
 
-template<typename Pull, typename Push>
-class task : noncopyable
+template<typename T>
+using task_trait = resumable_trait<task<T>, task_promise<T>>;
+
+template<typename T>
+class task : public resumable<task_trait<T>>
 {
 public:
-    using pull_type = Pull;
-    using push_type = Push;
-    using promise_type = promise<pull_type, push_type>;
+    using return_type = T;
+    using promise_type = task_promise<return_type>;
 
     explicit task(std::coroutine_handle<promise_type> handle)
-        : handle_(handle)
+        : resumable<task_trait<T>> { handle }
     {
     }
+};
 
-    ~task()
+template<typename T>
+struct task_promise : promise<task_trait<T>>
+{
+    using resumable_type = task<T>;
+
+    resumable_type::return_type value_;
+
+    void return_value(resumable_type::return_type&& value)
     {
-        handle_.destroy();
+        value_ = std::move(value);
     }
+};
 
-    void resume()
-    {
-        handle_.resume();
-    }
+template<>
+struct task_promise<void> : promise<task_trait<void>>
+{
+    using resumable_type = task<void>;
 
-    std::coroutine_handle<promise_type> get_handle()
-    {
-        return handle_;
-    }
-
-private:
-    std::coroutine_handle<promise_type> handle_;
+    void return_void() noexcept {}
 };
 
 } // namespace riz::coro
