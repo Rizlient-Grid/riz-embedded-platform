@@ -9,9 +9,9 @@
 
 namespace riz::coro {
 
-template<ResumableTrait Trait>
+template<ResumableTrait TraitT>
 struct promise {
-    using resumable_trait_type = Trait;
+    using resumable_trait_type = TraitT;
     using resumable_type = resumable_trait_type::resumable_type;
     using promise_type = resumable_trait_type::promise_type;
 

@@ -19,16 +19,16 @@ concept ResumableTrait = requires {
     typename T::promise_type;
 };
 
-template<typename Resumable, typename Promise>
+template<typename ResumableT, typename PromiseT>
 struct resumable_trait {
-    using resumable_type = Resumable;
-    using promise_type = Promise;
+    using resumable_type = ResumableT;
+    using promise_type = PromiseT;
 };
 
-template<ResumableTrait Trait>
+template<ResumableTrait TraitT>
 class resumable : public moveonly {
 public:
-    using resumable_trait_type = Trait;
+    using resumable_trait_type = TraitT;
     using promise_type = resumable_trait_type::promise_type;
     static constexpr bool tag_is_resumable = true;
 
