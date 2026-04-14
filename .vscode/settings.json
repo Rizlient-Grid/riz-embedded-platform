@@ -86,7 +86,9 @@
         "charconv": "cpp",
         "clocale": "cpp",
         "cwctype": "cpp",
-        "cerrno": "cpp"
+        "cerrno": "cpp",
+        "ccomplex": "cpp",
+        "ctgmath": "cpp"
     },
     "C_Cpp.default.cppStandard": "c++23"
 }
