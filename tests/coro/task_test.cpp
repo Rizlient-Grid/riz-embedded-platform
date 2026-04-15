@@ -44,9 +44,8 @@ riz::coro::task<int> simple_coro2()
 
 TEST(TaskTest, ConstructsFromCoroutine)
 {
-    auto t = simple_coro();
-    t.resume();
-    EXPECT_EQ(t.handle().done(), true);
+    auto t = start(simple_coro());
+    EXPECT_EQ(t.done(), true);
 }
 
 TEST(TaskTest, CoawaitAnotherTask)
