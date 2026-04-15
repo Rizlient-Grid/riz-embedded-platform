@@ -46,4 +46,11 @@ struct task_promise<void> : promise<task_trait<void>> {
     void return_void() noexcept {}
 };
 
+template<typename T>
+[[nodiscard]] auto start(task<T>&& tsk)
+{
+    tsk.resume();
+    return std::move(tsk);
+}
+
 } // namespace riz::coro

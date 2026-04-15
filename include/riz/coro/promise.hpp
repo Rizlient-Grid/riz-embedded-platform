@@ -1,6 +1,8 @@
 #pragma once
 
-#include <riz/coro/awaiter.hpp>
+#include <riz/coro/awaiter/final_awaiter.hpp>
+#include <riz/coro/awaiter/initial_awaiter.hpp>
+#include <riz/coro/awaiter/resumable_awaiter.hpp>
 #include <riz/coro/resumable.hpp>
 
 #include <coroutine>
@@ -16,6 +18,7 @@ struct promise {
     using promise_type = resumable_trait_type::promise_type;
 
     std::coroutine_handle<> continuation_;
+    bool started_ {false};
 
     resumable_type get_return_object()
     {
@@ -24,14 +27,14 @@ struct promise {
         return resumable_type {handle};
     }
 
-    std::suspend_always initial_suspend() noexcept
+    auto initial_suspend() noexcept
     {
-        return {};
+        return awaiter::initial_awaiter<promise<resumable_trait_type>> {*this};
     }
 
     auto final_suspend() noexcept
     {
-        return final_awaiter {continuation_};
+        return awaiter::final_awaiter {continuation_};
     }
 
     void unhandled_exception() noexcept
@@ -40,9 +43,12 @@ struct promise {
     }
 
     template<Resumable T>
+    auto await_transform(T&) = delete;
+
+    template<Resumable T>
     auto await_transform(T&& awaitable)
     {
-        return resumable_awaiter<T> {awaitable};
+        return awaiter::resumable_awaiter<T> {std::move(awaitable)};
     }
 };
 

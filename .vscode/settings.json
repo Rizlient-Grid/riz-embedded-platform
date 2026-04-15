@@ -82,7 +82,11 @@
         "thread": "cpp",
         "cctype": "cpp",
         "condition_variable": "cpp",
-        "cstdarg": "cpp"
+        "cstdarg": "cpp",
+        "charconv": "cpp",
+        "clocale": "cpp",
+        "cwctype": "cpp",
+        "cerrno": "cpp"
     },
     "C_Cpp.default.cppStandard": "c++23"
 }

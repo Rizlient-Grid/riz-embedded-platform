@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <coroutine>
+#include <utility>
 
 namespace riz::coro {
 
@@ -39,17 +40,39 @@ public:
 
     ~resumable()
     {
-        handle_.destroy();
+        if (handle_) {
+            handle_.destroy();
+        }
     }
 
-    resumable(resumable&&) = default;
+    resumable(resumable&& r)
+        : handle_ {std::exchange(r.handle_, {})}
+    {
+    }
 
-    resumable& operator=(resumable&&) = default;
+    resumable& operator=(resumable&& r)
+    {
+        if (this == &r) {
+            return *this;
+        }
+
+        if (handle_) {
+            handle_.destroy();
+        }
+        
+        handle_ = std::exchange(r.handle_, {});
+        return *this;
+    }
 
     void resume()
     {
         assert(!handle_.done());
         handle_.resume();
+    }
+
+    bool done() const noexcept
+    {
+        return handle_.done();
     }
 
     std::coroutine_handle<promise_type> handle() noexcept
