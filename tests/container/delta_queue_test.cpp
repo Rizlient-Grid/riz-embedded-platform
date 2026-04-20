@@ -228,6 +228,128 @@ TEST(DeltaQueueTest, AdvanceWithZeroElapsed)
     EXPECT_EQ(n.delta, 5u);
 }
 
+TEST(DeltaQueueTest, EraseFromEmpty)
+{
+    delta_queue dq;
+    delta_queue::node n;
+    EXPECT_FALSE(dq.erase(n));
+    EXPECT_TRUE(dq.empty());
+    EXPECT_EQ(dq.size(), 0u);
+}
+
+TEST(DeltaQueueTest, EraseNotFound)
+{
+    delta_queue dq;
+    delta_queue::node n1, n2;
+    dq.insert(5, n1);
+
+    EXPECT_FALSE(dq.erase(n2));
+    EXPECT_EQ(dq.size(), 1u);
+}
+
+TEST(DeltaQueueTest, EraseHeadSingleNode)
+{
+    delta_queue dq;
+    delta_queue::node n;
+    dq.insert(5, n);
+
+    EXPECT_TRUE(dq.erase(n));
+    EXPECT_TRUE(dq.empty());
+    EXPECT_EQ(dq.size(), 0u);
+    EXPECT_EQ(n.next, nullptr);
+}
+
+TEST(DeltaQueueTest, EraseHeadMultiNode)
+{
+    delta_queue dq;
+    delta_queue::node n1, n2, n3;
+    dq.insert(3, n1);
+    dq.insert(8, n2);
+    dq.insert(12, n3);
+
+    EXPECT_TRUE(dq.erase(n1));
+    EXPECT_EQ(dq.size(), 2u);
+    EXPECT_EQ(n2.delta, 8u);
+    EXPECT_EQ(n3.delta, 4u);
+    EXPECT_EQ(n1.next, nullptr);
+}
+
+TEST(DeltaQueueTest, EraseMiddle)
+{
+    delta_queue dq;
+    delta_queue::node n1, n2, n3;
+    dq.insert(3, n1);
+    dq.insert(8, n2);
+    dq.insert(12, n3);
+
+    EXPECT_TRUE(dq.erase(n2));
+    EXPECT_EQ(dq.size(), 2u);
+    EXPECT_EQ(n1.delta, 3u);
+    EXPECT_EQ(n3.delta, 9u);
+    EXPECT_EQ(n1.next, &n3);
+    EXPECT_EQ(n2.next, nullptr);
+}
+
+TEST(DeltaQueueTest, EraseTail)
+{
+    delta_queue dq;
+    delta_queue::node n1, n2, n3;
+    dq.insert(3, n1);
+    dq.insert(8, n2);
+    dq.insert(12, n3);
+
+    EXPECT_TRUE(dq.erase(n3));
+    EXPECT_EQ(dq.size(), 2u);
+    EXPECT_EQ(n1.delta, 3u);
+    EXPECT_EQ(n2.delta, 5u);
+    EXPECT_EQ(n1.next, &n2);
+    EXPECT_EQ(n2.next, nullptr);
+    EXPECT_EQ(n3.next, nullptr);
+}
+
+TEST(DeltaQueueTest, EraseAllSequential)
+{
+    delta_queue dq;
+    delta_queue::node n1, n2, n3;
+    dq.insert(3, n1);
+    dq.insert(8, n2);
+    dq.insert(12, n3);
+
+    EXPECT_TRUE(dq.erase(n2));
+    EXPECT_TRUE(dq.erase(n3));
+    EXPECT_TRUE(dq.erase(n1));
+    EXPECT_TRUE(dq.empty());
+    EXPECT_EQ(dq.size(), 0u);
+}
+
+TEST(DeltaQueueTest, EraseTwiceReturnsFalse)
+{
+    delta_queue dq;
+    delta_queue::node n;
+    dq.insert(5, n);
+
+    EXPECT_TRUE(dq.erase(n));
+    EXPECT_FALSE(dq.erase(n));
+    EXPECT_TRUE(dq.empty());
+}
+
+TEST(DeltaQueueTest, EraseThenInsert)
+{
+    delta_queue dq;
+    delta_queue::node n1, n2, n3;
+    dq.insert(3, n1);
+    dq.insert(8, n2);
+
+    EXPECT_TRUE(dq.erase(n2));
+    dq.insert(12, n3);
+
+    EXPECT_EQ(dq.size(), 2u);
+    EXPECT_EQ(n1.delta, 3u);
+    EXPECT_EQ(n3.delta, 9u);
+    EXPECT_EQ(n1.next, &n3);
+    EXPECT_EQ(n3.next, nullptr);
+}
+
 TEST(DeltaQueueTest, InsertAndAdvanceSequence)
 {
     delta_queue dq;
