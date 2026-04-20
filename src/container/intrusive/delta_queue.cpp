@@ -12,7 +12,7 @@ std::size_t delta_queue::size() const noexcept
     return size_;
 }
 
-void delta_queue::insert(key_type abs_key, node& entry)
+void delta_queue::insert(key_type abs_key, node_type& entry)
 {
     if (!head_) {
         entry.delta = abs_key;
@@ -24,8 +24,8 @@ void delta_queue::insert(key_type abs_key, node& entry)
         head_->delta -= abs_key;
         head_ = &entry;
     } else {
-        node* cur = head_;
-        node* prev = nullptr;
+        node_type* cur = head_;
+        node_type* prev = nullptr;
         delta_type accum = 0;
         while (cur && cur->delta + accum <= abs_key) {
             accum += cur->delta;
@@ -44,9 +44,44 @@ void delta_queue::insert(key_type abs_key, node& entry)
     ++size_;
 }
 
-delta_queue::node* delta_queue::pop_front() noexcept
+bool delta_queue::erase(node_type& entry) noexcept
 {
-    node* ret = head_;
+    if (!head_) {
+        return false;
+    }
+
+    if (head_ == &entry) {
+        if (entry.next) {
+            entry.next->delta += entry.delta;
+        }
+        head_ = entry.next;
+        entry.next = nullptr;
+        --size_;
+        return true;
+    }
+
+    node_type* prev = head_;
+    node_type* cur = head_->next;
+    while (cur) {
+        if (cur == &entry) {
+            if (entry.next) {
+                entry.next->delta += entry.delta;
+            }
+            prev->next = entry.next;
+            entry.next = nullptr;
+            --size_;
+            return true;
+        }
+        prev = cur;
+        cur = cur->next;
+    }
+
+    return false;
+}
+
+delta_queue::node_type* delta_queue::pop_front() noexcept
+{
+    node_type* ret = head_;
     if (head_) {
         head_ = head_->next;
         --size_;
