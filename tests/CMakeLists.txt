@@ -17,6 +17,11 @@ add_executable(delta_queue_test container/delta_queue_test.cpp)
 target_link_libraries(delta_queue_test GTest::gtest_main riz)
 target_include_directories(delta_queue_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
+add_executable(fifo_queue_test container/fifo_queue_test.cpp)
+target_link_libraries(fifo_queue_test GTest::gtest_main riz)
+target_include_directories(fifo_queue_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
 include(GoogleTest)
 gtest_discover_tests(task_test)
 gtest_discover_tests(delta_queue_test)
+gtest_discover_tests(fifo_queue_test)
