@@ -20,16 +20,21 @@ concept ResumableTrait = requires {
     typename T::promise_type;
 };
 
-template<typename ResumableT, typename PromiseT>
+template<template<typename> typename ResumableT,
+         template<typename> typename PromiseT,
+         typename T>
 struct resumable_trait {
-    using resumable_type = ResumableT;
-    using promise_type = PromiseT;
+    using return_type = T;
+    using resumable_type = ResumableT<return_type>;
+    using promise_type = PromiseT<return_type>;
 };
 
 template<ResumableTrait TraitT>
 class resumable : public moveonly {
 public:
     using resumable_trait_type = TraitT;
+    using return_type = resumable_trait_type::return_type;
+    using resumable_type = resumable_trait_type::resumable_type;
     using promise_type = resumable_trait_type::promise_type;
     static constexpr bool tag_is_resumable = true;
 
@@ -73,6 +78,13 @@ public:
     bool done() const noexcept
     {
         return handle_.done();
+    }
+
+    template<typename R = return_type>
+        requires (!std::is_void_v<R>)
+    R take_result()
+    {
+        return std::move(handle_.promise().result);
     }
 
     std::coroutine_handle<promise_type> handle() noexcept

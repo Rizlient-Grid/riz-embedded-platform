@@ -88,7 +88,8 @@
         "cwctype": "cpp",
         "cerrno": "cpp",
         "ccomplex": "cpp",
-        "ctgmath": "cpp"
+        "ctgmath": "cpp",
+        "cassert": "cpp"
     },
     "C_Cpp.default.cppStandard": "c++23"
 }
