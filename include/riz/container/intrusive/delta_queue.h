@@ -27,8 +27,7 @@ public:
 
     template<typename Callback>
         requires std::invocable<Callback, node_type*>
-    void advance(delta_type elapsed, Callback&& callback)
-    {
+    void advance(delta_type elapsed, Callback&& callback) {
         while (head_ && head_->delta <= elapsed) {
             elapsed -= head_->delta;
             node_type* entry = pop_front();
@@ -44,4 +43,4 @@ private:
     std::size_t size_ {0u};
 };
 
-} // namespace riz::container
+} // namespace riz::container::intrusive

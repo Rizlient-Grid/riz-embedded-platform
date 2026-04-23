@@ -4,15 +4,13 @@
 
 using namespace riz::container::intrusive;
 
-TEST(FifoQueueTest, InitiallyEmpty)
-{
+TEST(FifoQueueTest, InitiallyEmpty) {
     fifo_queue q;
     EXPECT_TRUE(q.empty());
     EXPECT_EQ(q.size(), 0u);
 }
 
-TEST(FifoQueueTest, PushSingle)
-{
+TEST(FifoQueueTest, PushSingle) {
     fifo_queue q;
     fifo_queue::node_type n;
 
@@ -23,8 +21,7 @@ TEST(FifoQueueTest, PushSingle)
     EXPECT_EQ(n.next, nullptr);
 }
 
-TEST(FifoQueueTest, PushMultiple)
-{
+TEST(FifoQueueTest, PushMultiple) {
     fifo_queue q;
     fifo_queue::node_type n1, n2, n3;
 
@@ -38,16 +35,14 @@ TEST(FifoQueueTest, PushMultiple)
     EXPECT_EQ(n3.next, nullptr);
 }
 
-TEST(FifoQueueTest, PopFrontFromEmpty)
-{
+TEST(FifoQueueTest, PopFrontFromEmpty) {
     fifo_queue q;
     EXPECT_EQ(q.pop_front(), nullptr);
     EXPECT_TRUE(q.empty());
     EXPECT_EQ(q.size(), 0u);
 }
 
-TEST(FifoQueueTest, PopFrontSingle)
-{
+TEST(FifoQueueTest, PopFrontSingle) {
     fifo_queue q;
     fifo_queue::node_type n;
     q.push(n);
@@ -59,8 +54,7 @@ TEST(FifoQueueTest, PopFrontSingle)
     EXPECT_EQ(q.size(), 0u);
 }
 
-TEST(FifoQueueTest, PopFrontMaintainsOrder)
-{
+TEST(FifoQueueTest, PopFrontMaintainsOrder) {
     fifo_queue q;
     fifo_queue::node_type n1, n2, n3;
     q.push(n1);
@@ -74,8 +68,7 @@ TEST(FifoQueueTest, PopFrontMaintainsOrder)
     EXPECT_EQ(q.size(), 0u);
 }
 
-TEST(FifoQueueTest, PopFrontAllThenPush)
-{
+TEST(FifoQueueTest, PopFrontAllThenPush) {
     fifo_queue q;
     fifo_queue::node_type n1, n2;
     q.push(n1);
@@ -91,8 +84,7 @@ TEST(FifoQueueTest, PopFrontAllThenPush)
     EXPECT_EQ(q.pop_front(), &n3);
 }
 
-TEST(FifoQueueTest, InterleavedPushPop)
-{
+TEST(FifoQueueTest, InterleavedPushPop) {
     fifo_queue q;
     fifo_queue::node_type n1, n2, n3;
 
@@ -108,8 +100,7 @@ TEST(FifoQueueTest, InterleavedPushPop)
     EXPECT_TRUE(q.empty());
 }
 
-TEST(FifoQueueTest, SizeTracksCorrectly)
-{
+TEST(FifoQueueTest, SizeTracksCorrectly) {
     fifo_queue q;
     fifo_queue::node_type nodes[5];
 

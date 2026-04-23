@@ -20,25 +20,21 @@ struct promise {
     std::coroutine_handle<> continuation_;
     bool started_ {false};
 
-    resumable_type get_return_object()
-    {
+    resumable_type get_return_object() {
         auto handle =
             std::coroutine_handle<promise_type>::from_promise(static_cast<promise_type&>(*this));
         return resumable_type {handle};
     }
 
-    auto initial_suspend() noexcept
-    {
+    auto initial_suspend() noexcept {
         return awaiter::initial_awaiter<promise<resumable_trait_type>> {*this};
     }
 
-    auto final_suspend() noexcept
-    {
+    auto final_suspend() noexcept {
         return awaiter::final_awaiter {continuation_};
     }
 
-    void unhandled_exception() noexcept
-    {
+    void unhandled_exception() noexcept {
         std::terminate();
     }
 
@@ -46,8 +42,7 @@ struct promise {
     auto await_transform(T&) = delete;
 
     template<Resumable T>
-    auto await_transform(T&& awaitable)
-    {
+    auto await_transform(T&& awaitable) {
         return awaiter::resumable_awaiter<T> {std::move(awaitable)};
     }
 };

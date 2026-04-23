@@ -34,24 +34,18 @@ public:
     static constexpr bool tag_is_resumable = true;
 
     explicit resumable(std::coroutine_handle<promise_type> h)
-        : handle_ {h}
-    {
-    }
+        : handle_ {h} {}
 
-    ~resumable()
-    {
+    ~resumable() {
         if (handle_) {
             handle_.destroy();
         }
     }
 
     resumable(resumable&& r)
-        : handle_ {std::exchange(r.handle_, {})}
-    {
-    }
+        : handle_ {std::exchange(r.handle_, {})} {}
 
-    resumable& operator=(resumable&& r)
-    {
+    resumable& operator=(resumable&& r) {
         if (this == &r) {
             return *this;
         }
@@ -59,24 +53,21 @@ public:
         if (handle_) {
             handle_.destroy();
         }
-        
+
         handle_ = std::exchange(r.handle_, {});
         return *this;
     }
 
-    void resume()
-    {
+    void resume() {
         assert(!handle_.done());
         handle_.resume();
     }
 
-    bool done() const noexcept
-    {
+    bool done() const noexcept {
         return handle_.done();
     }
 
-    std::coroutine_handle<promise_type> handle() noexcept
-    {
+    std::coroutine_handle<promise_type> handle() noexcept {
         return handle_;
     }
 
