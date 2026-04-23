@@ -21,8 +21,7 @@ concept ResumableTrait = requires {
 };
 
 template<template<typename> typename ResumableT,
-         template<typename> typename PromiseT,
-         typename T>
+         template<typename> typename PromiseT, typename T>
 struct resumable_trait {
     using return_type = T;
     using resumable_type = ResumableT<return_type>;
@@ -64,7 +63,7 @@ public:
         if (handle_) {
             handle_.destroy();
         }
-        
+
         handle_ = std::exchange(r.handle_, {});
         return *this;
     }
@@ -81,7 +80,7 @@ public:
     }
 
     template<typename R = return_type>
-        requires (!std::is_void_v<R>)
+        requires(!std::is_void_v<R>)
     R take_result()
     {
         return std::move(handle_.promise().result);

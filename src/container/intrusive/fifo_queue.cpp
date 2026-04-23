@@ -31,6 +31,6 @@ fifo_queue::node_type* fifo_queue::pop_front() noexcept
         }
         --size_;
     }
-    
+
     return ret;
 }

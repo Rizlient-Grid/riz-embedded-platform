@@ -44,4 +44,4 @@ private:
     std::size_t size_ {0u};
 };
 
-} // namespace riz::container
+} // namespace riz::container::intrusive
