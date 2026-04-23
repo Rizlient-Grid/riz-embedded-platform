@@ -24,13 +24,11 @@ public:
 
     scheduler() = default;
 
-    void post(node_type& entry)
-    {
+    void post(node_type& entry) {
         ready_queue_.push(entry);
     }
 
-    void run()
-    {
+    void run() {
         while (fifo_queue::node_type* n = ready_queue_.pop_front()) {
             node_type* tn = static_cast<node_type*>(n);
             if (tn->coro_handle) {
@@ -39,8 +37,7 @@ public:
         }
     }
 
-    bool run_once()
-    {
+    bool run_once() {
         if (fifo_queue::node_type* n = ready_queue_.pop_front()) {
             node_type* tn = static_cast<node_type*>(n);
             if (tn->coro_handle) {
@@ -61,8 +58,7 @@ template<typename T>
 class schedulable_task;
 
 template<typename T>
-[[nodiscard]] schedulable_task<T> start(schedulable_task<T>&& task)
-{
+[[nodiscard]] schedulable_task<T> start(schedulable_task<T>&& task) {
     auto& promise = task.handle().promise();
     auto& scheduler = promise.scheduler;
     auto& schedulable_node = promise.schedulable_node;
