@@ -32,7 +32,7 @@ struct resumable_awaiter {
     resumable_type::return_type await_resume() noexcept
     {
         if constexpr (!std::is_void_v<typename resumable_type::return_type>) {
-            return std::move(resumable_.handle().promise().value_);
+            return std::move(resumable_.handle().promise().result);
         }
     }
 };
