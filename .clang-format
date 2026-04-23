@@ -35,7 +35,7 @@ BraceWrapping:
   SplitEmptyRecord: true
   SplitEmptyNamespace: true
 BreakBeforeTernaryOperators: true
-ColumnLimit:     100
+ColumnLimit:     80
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4
 BreakConstructorInitializers: BeforeComma

@@ -16,24 +16,24 @@ using namespace riz::coro;
 
 TEST(SchedulableTaskTest, HasCorrectPromiseType)
 {
-    static_assert(
-        std::is_same_v<schedulable_task<int>::promise_type,
-                       schedulable_task_promise<int>>);
-    static_assert(
-        std::is_same_v<schedulable_task<void>::promise_type,
-                       schedulable_task_promise<void>>);
+    static_assert(std::is_same_v<schedulable_task<int>::promise_type,
+                                 schedulable_task_promise<int>>);
+    static_assert(std::is_same_v<schedulable_task<void>::promise_type,
+                                 schedulable_task_promise<void>>);
 }
 
 TEST(SchedulableTaskTest, HasCorrectReturnType)
 {
     static_assert(std::is_same_v<schedulable_task<int>::return_type, int>);
     static_assert(std::is_same_v<schedulable_task<void>::return_type, void>);
-    static_assert(std::is_same_v<schedulable_task<double>::return_type, double>);
+    static_assert(
+        std::is_same_v<schedulable_task<double>::return_type, double>);
 }
 
 TEST(SchedulableTaskTest, HasCorrectSchedulerType)
 {
-    static_assert(std::is_same_v<schedulable_task<int>::scheduler_type, scheduler<>>);
+    static_assert(
+        std::is_same_v<schedulable_task<int>::scheduler_type, scheduler<>>);
 }
 
 TEST(SchedulableTaskTest, TagIsResumable)
@@ -145,7 +145,8 @@ TEST(SchedulableTaskTest, DoneIsFalseBeforeRun)
 namespace {
 
 // Records the order in which coroutines execute
-schedulable_task<void> ordered_task(scheduler<>& sched, int id, std::vector<int>& log)
+schedulable_task<void> ordered_task(scheduler<>& sched, int id,
+                                    std::vector<int>& log)
 {
     log.push_back(id);
     co_return;

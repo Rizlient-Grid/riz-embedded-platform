@@ -14,7 +14,7 @@ template<typename T>
 struct schedulable_task_promise;
 
 template<typename T>
-using schedulable_task_trait = 
+using schedulable_task_trait =
     resumable_trait<schedulable_task, schedulable_task_promise, T>;
 
 template<typename T>
@@ -53,8 +53,10 @@ struct schedulable_task_promise : promise<schedulable_task_trait<T>> {
     template<typename... Ts>
     schedulable_task_promise(scheduler_type& sched, Ts&&...)
         : scheduler(sched)
-        , schedulable_node {.coro_handle =
-            std::coroutine_handle<schedulable_task_promise>::from_promise(*this)}
+        , schedulable_node {
+              .coro_handle =
+                  std::coroutine_handle<schedulable_task_promise>::from_promise(
+                      *this)}
     {
     }
 
@@ -80,8 +82,10 @@ struct schedulable_task_promise<void> : promise<schedulable_task_trait<void>> {
     template<typename... Ts>
     schedulable_task_promise(scheduler_type& sched, Ts&&...)
         : scheduler(sched)
-        , schedulable_node {.coro_handle =
-            std::coroutine_handle<schedulable_task_promise>::from_promise(*this)}
+        , schedulable_node {
+              .coro_handle =
+                  std::coroutine_handle<schedulable_task_promise>::from_promise(
+                      *this)}
     {
     }
 

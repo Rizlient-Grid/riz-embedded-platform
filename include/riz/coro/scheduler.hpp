@@ -13,10 +13,12 @@ class scheduler : public noncopyable {
     struct empty_mutex {};
     struct empty_sem {};
     using fifo_queue = riz::container::intrusive::fifo_queue;
-    using mutex_type = std::conditional_t<std::is_void_v<Mutex>, empty_mutex, Mutex>;
-    using sem_type = std::conditional_t<std::is_void_v<Sem>, empty_sem, Sem>;;
+    using mutex_type =
+        std::conditional_t<std::is_void_v<Mutex>, empty_mutex, Mutex>;
+    using sem_type = std::conditional_t<std::is_void_v<Sem>, empty_sem, Sem>;
+
 public:
-    struct node_type: fifo_queue::node_type {
+    struct node_type : fifo_queue::node_type {
         std::coroutine_handle<> coro_handle;
     };
 

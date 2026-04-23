@@ -22,8 +22,8 @@ struct promise {
 
     resumable_type get_return_object()
     {
-        auto handle =
-            std::coroutine_handle<promise_type>::from_promise(static_cast<promise_type&>(*this));
+        auto handle = std::coroutine_handle<promise_type>::from_promise(
+            static_cast<promise_type&>(*this));
         return resumable_type {handle};
     }
 

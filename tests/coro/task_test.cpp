@@ -8,7 +8,8 @@
 
 TEST(TaskTest, HasCorrectPromiseType)
 {
-    static_assert(std::is_same_v<riz::coro::task<int>::promise_type, riz::coro::task_promise<int>>);
+    static_assert(std::is_same_v<riz::coro::task<int>::promise_type,
+                                 riz::coro::task_promise<int>>);
 }
 
 TEST(TaskTest, SizeIsOnePointer)
