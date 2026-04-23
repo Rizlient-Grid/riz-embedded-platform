@@ -14,19 +14,15 @@ struct initial_awaiter {
     promise_type& promise_;
 
     explicit initial_awaiter(promise_type& r)
-        : promise_(r)
-    {
-    }
+        : promise_(r) {}
 
-    bool await_ready() const noexcept
-    {
+    bool await_ready() const noexcept {
         return false;
     }
 
     void await_suspend(std::coroutine_handle<>) noexcept {}
 
-    void await_resume() noexcept
-    {
+    void await_resume() noexcept {
         promise_.started_ = true;
     }
 };

@@ -9,17 +9,13 @@ namespace riz::coro::awaiter {
 
 struct final_awaiter {
     explicit final_awaiter(std::coroutine_handle<> continuation)
-        : continuation_ {continuation}
-    {
-    }
+        : continuation_ {continuation} {}
 
-    bool await_ready() const noexcept
-    {
+    bool await_ready() const noexcept {
         return false;
     }
 
-    std::coroutine_handle<> await_suspend(std::coroutine_handle<> h) noexcept
-    {
+    std::coroutine_handle<> await_suspend(std::coroutine_handle<> h) noexcept {
         if (continuation_) {
             return continuation_;
         }

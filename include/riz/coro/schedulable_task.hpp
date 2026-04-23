@@ -26,9 +26,7 @@ public:
     using resumable<schedulable_task_trait<T>>::tag_is_resumable;
 
     explicit schedulable_task(std::coroutine_handle<promise_type> handle)
-        : resumable<schedulable_task_trait<T>> {handle}
-    {
-    }
+        : resumable<schedulable_task_trait<T>> {handle} {}
 
     using resumable<schedulable_task_trait<T>>::done;
     using resumable<schedulable_task_trait<T>>::take_result;
@@ -56,17 +54,13 @@ struct schedulable_task_promise : promise<schedulable_task_trait<T>> {
         , schedulable_node {
               .coro_handle =
                   std::coroutine_handle<schedulable_task_promise>::from_promise(
-                      *this)}
-    {
-    }
+                      *this)} {}
 
-    void return_value(resumable_type::return_type&& value)
-    {
+    void return_value(resumable_type::return_type&& value) {
         result = std::move(value);
     }
 
-    void return_value(const resumable_type::return_type& value)
-    {
+    void return_value(const resumable_type::return_type& value) {
         result = value;
     }
 };
@@ -85,9 +79,7 @@ struct schedulable_task_promise<void> : promise<schedulable_task_trait<void>> {
         , schedulable_node {
               .coro_handle =
                   std::coroutine_handle<schedulable_task_promise>::from_promise(
-                      *this)}
-    {
-    }
+                      *this)} {}
 
     void return_void() noexcept {}
 };

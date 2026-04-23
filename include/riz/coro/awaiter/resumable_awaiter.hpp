@@ -13,24 +13,19 @@ struct resumable_awaiter {
     template<typename T>
         requires Resumable<std::remove_cvref_t<T>>
     explicit resumable_awaiter(T&& r)
-        : resumable_(std::move(r))
-    {
-    }
+        : resumable_(std::move(r)) {}
 
-    bool await_ready() const noexcept
-    {
+    bool await_ready() const noexcept {
         return false;
     }
 
-    std::coroutine_handle<> await_suspend(std::coroutine_handle<> h) noexcept
-    {
+    std::coroutine_handle<> await_suspend(std::coroutine_handle<> h) noexcept {
         assert(!resumable_.handle().promise().started_);
         resumable_.handle().promise().continuation_ = h;
         return resumable_.handle();
     }
 
-    resumable_type::return_type await_resume() noexcept
-    {
+    resumable_type::return_type await_resume() noexcept {
         if constexpr (!std::is_void_v<typename resumable_type::return_type>) {
             return std::move(resumable_.handle().promise().result);
         }

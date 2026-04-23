@@ -30,8 +30,7 @@ template<typename T>
 concept accessible_default_constructible = requires { T {}; };
 
 template<typename T>
-consteval bool has_public_default_constructible()
-{
+consteval bool has_public_default_constructible() {
     return accessible_default_constructible<T>;
 }
 

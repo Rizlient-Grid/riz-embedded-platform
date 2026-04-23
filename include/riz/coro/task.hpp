@@ -24,9 +24,7 @@ public:
     using promise_type = task_promise<return_type>;
 
     explicit task(std::coroutine_handle<promise_type> handle)
-        : resumable<task_trait<T>> {handle}
-    {
-    }
+        : resumable<task_trait<T>> {handle} {}
 };
 
 template<typename T>
@@ -35,13 +33,11 @@ struct task_promise : promise<task_trait<T>> {
 
     resumable_type::return_type result;
 
-    void return_value(resumable_type::return_type&& value)
-    {
+    void return_value(resumable_type::return_type&& value) {
         result = std::move(value);
     }
 
-    void return_value(const resumable_type::return_type& value)
-    {
+    void return_value(const resumable_type::return_type& value) {
         result = value;
     }
 
@@ -64,8 +60,7 @@ struct task_promise<void> : promise<task_trait<void>> {
 };
 
 template<typename T>
-[[nodiscard]] auto start(task<T>&& tsk)
-{
+[[nodiscard]] auto start(task<T>&& tsk) {
     tsk.resume();
     return std::move(tsk);
 }
