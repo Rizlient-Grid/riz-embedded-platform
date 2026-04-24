@@ -27,11 +27,11 @@ struct moveonly {
 struct immovable : noncopyable, nonmovable {};
 
 template<typename T>
-concept accessible_default_constructible = requires { T {}; };
+concept is_default_constructible = requires { T {}; };
 
 template<typename T>
-consteval bool has_public_default_constructible() {
-    return accessible_default_constructible<T>;
+consteval bool is_public_default_constructible() {
+    return is_default_constructible<T>;
 }
 
 } // namespace riz
