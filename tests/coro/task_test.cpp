@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <riz/coro/promise.hpp>
+#include <riz/coro/promise/promise.hpp>
 #include <riz/coro/task.hpp>
 
 #include <coroutine>
@@ -8,7 +8,7 @@
 
 TEST(TaskTest, HasCorrectPromiseType) {
     static_assert(std::is_same_v<riz::coro::task<int>::promise_type,
-                                 riz::coro::task_promise<int>>);
+                                 riz::coro::promise::task_promise<int>>);
 }
 
 TEST(TaskTest, SizeIsOnePointer) {

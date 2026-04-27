@@ -1,6 +1,6 @@
 #pragma once
 
-#include <riz/coro/promise.hpp>
+#include <riz/coro/promise/promise.hpp>
 #include <riz/coro/resumable.hpp>
 #include <riz/coro/scheduler.hpp>
 
@@ -40,7 +40,8 @@ private:
 };
 
 template<typename T>
-struct schedulable_task_promise : promise<schedulable_task_trait<T>> {
+struct schedulable_task_promise
+    : riz::coro::promise::promise<schedulable_task_trait<T>> {
     using resumable_type = schedulable_task<T>;
     using scheduler_type = scheduler<>;
 
@@ -66,7 +67,8 @@ struct schedulable_task_promise : promise<schedulable_task_trait<T>> {
 };
 
 template<>
-struct schedulable_task_promise<void> : promise<schedulable_task_trait<void>> {
+struct schedulable_task_promise<void>
+    : riz::coro::promise::promise<schedulable_task_trait<void>> {
     using resumable_type = schedulable_task<void>;
     using scheduler_type = scheduler<>;
 
