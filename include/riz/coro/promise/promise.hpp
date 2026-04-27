@@ -9,10 +9,10 @@
 #include <exception>
 #include <type_traits>
 
-namespace riz::coro {
+namespace riz::coro::promise {
 
 template<ResumableTrait TraitT>
-struct promise {
+struct promise_base {
     using resumable_trait_type = TraitT;
     using resumable_type = resumable_trait_type::resumable_type;
     using promise_type = resumable_trait_type::promise_type;
@@ -27,7 +27,8 @@ struct promise {
     }
 
     auto initial_suspend() noexcept {
-        return awaiter::initial_awaiter<promise<resumable_trait_type>> {*this};
+        return awaiter::initial_awaiter<promise_base<resumable_trait_type>> {
+            *this};
     }
 
     auto final_suspend() noexcept {
@@ -47,4 +48,4 @@ struct promise {
     }
 };
 
-} // namespace riz::coro
+} // namespace riz::coro::promise
