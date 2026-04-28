@@ -1,6 +1,6 @@
 #pragma once
 
-#include <riz/coro/promise/promise.hpp>
+#include <riz/coro/promise/promise_base.hpp>
 #include <riz/coro/resumable.hpp>
 
 namespace riz::coro {
