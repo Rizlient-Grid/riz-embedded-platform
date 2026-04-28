@@ -8,13 +8,15 @@
 namespace riz::coro {
 
 template<typename T>
-using task_trait = riz::coro::promise::task_trait<T>;
+using task_trait = promise::task_trait<T>;
+template<typename T>
+using task_promise = promise::task_promise<T>;
 
 template<typename T>
 class task : public resumable<task_trait<T>> {
 public:
     using return_type = T;
-    using promise_type = promise::task_promise<return_type>;
+    using promise_type = task_promise<return_type>;
 
     explicit task(std::coroutine_handle<promise_type> handle)
         : resumable<task_trait<T>> {handle} {}
