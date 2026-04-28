@@ -1,10 +1,15 @@
 #pragma once
 
+#include <riz/coro/execution/scheduler.h>
 #include <riz/coro/promise/schedulable_task_promise.hpp>
 #include <riz/coro/resumable.hpp>
-#include <riz/coro/scheduler.hpp>
 
 #include <coroutine>
+
+namespace riz::coro::execution {
+template<typename T>
+riz::coro::schedulable_task<T> start(riz::coro::schedulable_task<T>&& task);
+}
 
 namespace riz::coro {
 
@@ -18,7 +23,6 @@ class schedulable_task : private resumable<schedulable_task_trait<T>> {
 public:
     using return_type = T;
     using promise_type = schedulable_task_promise<return_type>;
-    using scheduler_type = scheduler<>;
     using resumable<schedulable_task_trait<T>>::tag_is_resumable;
 
     explicit schedulable_task(std::coroutine_handle<promise_type> handle)
@@ -32,7 +36,8 @@ private:
     friend struct riz::coro::awaiter::resumable_awaiter;
 
     template<typename R>
-    friend schedulable_task<R> start(schedulable_task<R>&& task);
+    friend schedulable_task<R>
+    riz::coro::execution::start(schedulable_task<R>&& task);
 };
 
 } // namespace riz::coro
