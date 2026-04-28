@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <riz/coro/promise/promise.hpp>
 #include <riz/coro/task.hpp>
 
 #include <coroutine>
