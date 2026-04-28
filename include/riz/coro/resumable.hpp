@@ -49,7 +49,7 @@ public:
     resumable(resumable&& r)
         : handle_ {std::exchange(r.handle_, {})} {}
 
-    resumable& operator=(resumable&& r) {
+    resumable& operator=(resumable&& r) noexcept {
         if (this == &r) {
             return *this;
         }
@@ -62,7 +62,7 @@ public:
         return *this;
     }
 
-    void resume() {
+    void resume() noexcept {
         assert(!handle_.done());
         handle_.resume();
     }
@@ -73,12 +73,16 @@ public:
 
     template<typename R = return_type>
         requires(!std::is_void_v<R>)
-    R take_result() {
+    R take_result() noexcept {
         return std::move(handle_.promise().result);
     }
 
     std::coroutine_handle<promise_type> handle() noexcept {
         return handle_;
+    }
+
+    promise_type& promise() noexcept {
+        return handle_.promise();
     }
 
 private:
