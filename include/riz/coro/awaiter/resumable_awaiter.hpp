@@ -1,17 +1,17 @@
 #pragma once
 
-#include <riz/coro/resumable.hpp>
+#include <riz/coro/constraint/resumable.hpp>
 
 namespace riz::coro::awaiter {
 
-template<Resumable ResumableT>
+template<constraint::resumable ResumableT>
 struct resumable_awaiter {
     using resumable_type = ResumableT;
 
     resumable_type resumable_;
 
     template<typename T>
-        requires Resumable<std::remove_cvref_t<T>>
+        requires constraint::resumable<std::remove_cvref_t<T>>
     explicit resumable_awaiter(T&& r)
         : resumable_(std::move(r)) {}
 

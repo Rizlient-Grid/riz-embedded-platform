@@ -3,7 +3,7 @@
 #include <riz/coro/awaiter/final_awaiter.hpp>
 #include <riz/coro/awaiter/initial_awaiter.hpp>
 #include <riz/coro/awaiter/resumable_awaiter.hpp>
-#include <riz/coro/resumable.hpp>
+#include <riz/coro/constraint/resumable.hpp>
 
 #include <coroutine>
 #include <exception>
@@ -11,11 +11,19 @@
 
 namespace riz::coro::promise {
 
-template<ResumableTrait TraitT>
+template<template<typename> typename ResumableT,
+         template<typename> typename PromiseT, typename T>
+struct resumable_pair {
+    using return_type = T;
+    using resumable_type = ResumableT<return_type>;
+    using promise_type = PromiseT<return_type>;
+};
+
+template<constraint::resumable_pair ResumablePairT>
 struct promise_base {
-    using resumable_trait_type = TraitT;
-    using resumable_type = resumable_trait_type::resumable_type;
-    using promise_type = resumable_trait_type::promise_type;
+    using resumable_pair_type = ResumablePairT;
+    using resumable_type = resumable_pair_type::resumable_type;
+    using promise_type = resumable_pair_type::promise_type;
 
     std::coroutine_handle<> continuation_;
     bool started_ {false};
@@ -27,8 +35,7 @@ struct promise_base {
     }
 
     auto initial_suspend() noexcept {
-        return awaiter::initial_awaiter<promise_base<resumable_trait_type>> {
-            *this};
+        return awaiter::initial_awaiter<promise_base> {*this};
     }
 
     auto final_suspend() noexcept {
@@ -39,10 +46,10 @@ struct promise_base {
         std::terminate();
     }
 
-    template<Resumable T>
+    template<constraint::resumable T>
     auto await_transform(T&) = delete;
 
-    template<Resumable T>
+    template<constraint::resumable T>
     auto await_transform(T&& awaitable) {
         return awaiter::resumable_awaiter<T> {std::move(awaitable)};
     }
