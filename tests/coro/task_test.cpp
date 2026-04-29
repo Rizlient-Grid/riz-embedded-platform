@@ -1,21 +1,21 @@
 #include <gtest/gtest.h>
 
-#include <riz/coro/task.hpp>
+#include <riz/coro/resumable/task.hpp>
 
 #include <coroutine>
 #include <type_traits>
 
 TEST(TaskTest, HasCorrectPromiseType) {
-    static_assert(std::is_same_v<riz::coro::task<int>::promise_type,
+    static_assert(std::is_same_v<riz::coro::resumable::task<int>::promise_type,
                                  riz::coro::promise::task_promise<int>>);
 }
 
 TEST(TaskTest, SizeIsOnePointer) {
-    EXPECT_EQ(sizeof(riz::coro::task<int>), sizeof(void*));
+    EXPECT_EQ(sizeof(riz::coro::resumable::task<int>), sizeof(void*));
 }
 
 TEST(TaskTest, MoveSemantics) {
-    using T = riz::coro::task<int>;
+    using T = riz::coro::resumable::task<int>;
     static_assert(!std::is_copy_constructible_v<T>);
     static_assert(!std::is_copy_assignable_v<T>);
     static_assert(std::is_move_constructible_v<T>);
@@ -24,12 +24,12 @@ TEST(TaskTest, MoveSemantics) {
 
 namespace {
 
-riz::coro::task<int> simple_coro() {
+riz::coro::resumable::task<int> simple_coro() {
     std::cout << "here" << std::endl;
     co_return 0;
 }
 
-riz::coro::task<int> simple_coro2() {
+riz::coro::resumable::task<int> simple_coro2() {
     int rc = co_await simple_coro();
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     co_return rc;
@@ -43,7 +43,7 @@ TEST(TaskTest, ConstructsFromCoroutine) {
 }
 
 TEST(TaskTest, CoawaitAnotherTask) {
-    auto coro = []() -> riz::coro::task<int> {
+    auto coro = []() -> riz::coro::resumable::task<int> {
         int rc = co_await simple_coro();
         std::cout << "here2" << std::endl;
         co_return rc;
@@ -55,7 +55,7 @@ TEST(TaskTest, CoawaitAnotherTask) {
 }
 
 TEST(TaskTest, CoawaitChainedTasks) {
-    auto coro = []() -> riz::coro::task<int> {
+    auto coro = []() -> riz::coro::resumable::task<int> {
         int rc = co_await simple_coro2();
         std::cout << "here2" << std::endl;
         co_return rc;

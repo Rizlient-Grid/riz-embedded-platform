@@ -1,57 +1,53 @@
 #pragma once
 
+#include <riz/coro/constraint/resumable.hpp>
 #include <riz/coro/promise/promise_base.hpp>
-#include <riz/coro/resumable.hpp>
 
-namespace riz::coro {
+namespace riz::coro::resumable {
 template<typename T>
 class task;
 template<typename T>
 class schedulable_task;
-} // namespace riz::coro
+} // namespace riz::coro::resumable
 
 namespace riz::coro::promise {
 
 template<typename T>
-using task = riz::coro::task<T>;
-template<typename T>
-using schedulable_task = riz::coro::schedulable_task<T>;
-template<typename T>
 struct task_promise;
+template<typename T>
+using task_pair = resumable_pair<resumable::task, task_promise, T>;
 
 template<typename T>
-using task_trait = resumable_trait<task, task_promise, T>;
+struct task_promise : promise_base<task_pair<T>> {
+    using return_type = task_pair<T>::return_type;
+    using resumable_type = task_pair<T>::resumable_type;
 
-template<typename T>
-struct task_promise : promise_base<task_trait<T>> {
-    using resumable_type = task<T>;
+    return_type result;
 
-    resumable_type::return_type result;
-
-    void return_value(resumable_type::return_type&& value) {
+    void return_value(return_type&& value) {
         result = std::move(value);
     }
 
-    void return_value(const resumable_type::return_type& value) {
+    void return_value(const return_type& value) {
         result = value;
     }
 
-    using promise_base<task_trait<T>>::await_transform;
+    using promise_base<task_pair<T>>::await_transform;
 
     template<typename U>
-    auto await_transform(schedulable_task<U>&&) = delete;
+    auto await_transform(resumable::schedulable_task<U>&&) = delete;
 };
 
 template<>
-struct task_promise<void> : promise_base<task_trait<void>> {
-    using resumable_type = task<void>;
+struct task_promise<void> : promise_base<task_pair<void>> {
+    using resumable_type = task_pair<void>::resumable_type;
 
     void return_void() noexcept {}
 
-    using promise_base<task_trait<void>>::await_transform;
+    using promise_base<task_pair<void>>::await_transform;
 
     template<typename U>
-    auto await_transform(schedulable_task<U>&&) = delete;
+    auto await_transform(resumable::schedulable_task<U>&&) = delete;
 };
 
 }; // namespace riz::coro::promise

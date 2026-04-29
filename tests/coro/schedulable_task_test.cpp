@@ -2,8 +2,8 @@
 
 #include <riz/coro/execution/execute.hpp>
 #include <riz/coro/execution/scheduler.h>
-#include <riz/coro/schedulable_task.hpp>
-#include <riz/coro/task.hpp>
+#include <riz/coro/resumable/schedulable_task.hpp>
+#include <riz/coro/resumable/task.hpp>
 
 #include <coroutine>
 #include <type_traits>
@@ -16,32 +16,36 @@ using namespace riz::coro;
 // ---------------------------------------------------------------------------
 
 TEST(SchedulableTaskTest, HasCorrectPromiseType) {
-    static_assert(std::is_same_v<schedulable_task<int>::promise_type,
-                                 schedulable_task_promise<int>>);
-    static_assert(std::is_same_v<schedulable_task<void>::promise_type,
-                                 schedulable_task_promise<void>>);
+    static_assert(std::is_same_v<resumable::schedulable_task<int>::promise_type,
+                                 promise::schedulable_task_promise<int>>);
+    static_assert(
+        std::is_same_v<resumable::schedulable_task<void>::promise_type,
+                       promise::schedulable_task_promise<void>>);
 }
 
 TEST(SchedulableTaskTest, HasCorrectReturnType) {
-    static_assert(std::is_same_v<schedulable_task<int>::return_type, int>);
-    static_assert(std::is_same_v<schedulable_task<void>::return_type, void>);
     static_assert(
-        std::is_same_v<schedulable_task<double>::return_type, double>);
+        std::is_same_v<resumable::schedulable_task<int>::return_type, int>);
+    static_assert(
+        std::is_same_v<resumable::schedulable_task<void>::return_type, void>);
+    static_assert(
+        std::is_same_v<resumable::schedulable_task<double>::return_type,
+                       double>);
 }
 
 TEST(SchedulableTaskTest, TagIsResumable) {
-    static_assert(schedulable_task<int>::tag_is_resumable);
-    static_assert(schedulable_task<void>::tag_is_resumable);
+    static_assert(resumable::schedulable_task<int>::tag_is_resumable);
+    static_assert(resumable::schedulable_task<void>::tag_is_resumable);
 }
 
 TEST(SchedulableTaskTest, SatisfiesResumableConcept) {
-    static_assert(Resumable<schedulable_task<int>>);
-    static_assert(Resumable<schedulable_task<void>>);
-    static_assert(Resumable<schedulable_task<double>>);
+    static_assert(constraint::resumable<resumable::schedulable_task<int>>);
+    static_assert(constraint::resumable<resumable::schedulable_task<void>>);
+    static_assert(constraint::resumable<resumable::schedulable_task<double>>);
 }
 
 TEST(SchedulableTaskTest, MoveSemantics) {
-    using T = schedulable_task<int>;
+    using T = resumable::schedulable_task<int>;
     static_assert(!std::is_copy_constructible_v<T>);
     static_assert(!std::is_copy_assignable_v<T>);
     static_assert(std::is_move_constructible_v<T>);
@@ -51,7 +55,7 @@ TEST(SchedulableTaskTest, MoveSemantics) {
 TEST(SchedulableTaskTest, SizeIsOnePointer) {
     // schedulable_task privately inherits resumable, which holds a single
     // coroutine_handle (one pointer in size).
-    EXPECT_EQ(sizeof(schedulable_task<int>), sizeof(void*));
+    EXPECT_EQ(sizeof(resumable::schedulable_task<int>), sizeof(void*));
 }
 
 // ---------------------------------------------------------------------------
@@ -80,15 +84,16 @@ TEST(SchedulerTest, NodeTypeHasCoroHandle) {
 
 namespace {
 
-schedulable_task<int> simple_int_task(execution::scheduler& sched) {
+resumable::schedulable_task<int> simple_int_task(execution::scheduler& sched) {
     co_return 42;
 }
 
-schedulable_task<void> simple_void_task(execution::scheduler& sched) {
+resumable::schedulable_task<void>
+simple_void_task(execution::scheduler& sched) {
     co_return;
 }
 
-schedulable_task<int> zero_task(execution::scheduler& sched) {
+resumable::schedulable_task<int> zero_task(execution::scheduler& sched) {
     co_return 0;
 }
 
@@ -125,8 +130,8 @@ TEST(SchedulableTaskTest, DoneIsFalseBeforeRun) {
 namespace {
 
 // Records the order in which coroutines execute
-schedulable_task<void> ordered_task(execution::scheduler& sched, int id,
-                                    std::vector<int>& log) {
+resumable::schedulable_task<void> ordered_task(execution::scheduler& sched,
+                                               int id, std::vector<int>& log) {
     log.push_back(id);
     co_return;
 }
@@ -189,11 +194,11 @@ TEST(SchedulerTest, RunOnEmptyQueueIsNoOp) {
 
 namespace {
 
-schedulable_task<int> inner_task(execution::scheduler& sched) {
+resumable::schedulable_task<int> inner_task(execution::scheduler& sched) {
     co_return 10;
 }
 
-schedulable_task<int> outer_task(execution::scheduler& sched) {
+resumable::schedulable_task<int> outer_task(execution::scheduler& sched) {
     int val = co_await inner_task(sched);
     co_return val + 5;
 }
@@ -214,16 +219,16 @@ TEST(SchedulableTaskTest, CoawaitNestedTask) {
 
 namespace {
 
-schedulable_task<int> chain_a(execution::scheduler& sched) {
+resumable::schedulable_task<int> chain_a(execution::scheduler& sched) {
     co_return 1;
 }
 
-schedulable_task<int> chain_b(execution::scheduler& sched) {
+resumable::schedulable_task<int> chain_b(execution::scheduler& sched) {
     int a = co_await chain_a(sched);
     co_return a + 2;
 }
 
-schedulable_task<int> chain_c(execution::scheduler& sched) {
+resumable::schedulable_task<int> chain_c(execution::scheduler& sched) {
     int b = co_await chain_b(sched);
     co_return b + 3;
 }
@@ -244,7 +249,8 @@ TEST(SchedulableTaskTest, CoawaitChainedTasks) {
 
 namespace {
 
-schedulable_task<int*> pointer_task(execution::scheduler& sched, int* ptr) {
+resumable::schedulable_task<int*> pointer_task(execution::scheduler& sched,
+                                               int* ptr) {
     co_return ptr;
 }
 
@@ -265,11 +271,12 @@ TEST(SchedulableTaskTest, PointerReturnType) {
 
 namespace {
 
-riz::coro::task<int> plain_task() {
+riz::coro::resumable::task<int> plain_task() {
     co_return 7;
 }
 
-schedulable_task<int> schedulable_with_plain_task(execution::scheduler& sched) {
+resumable::schedulable_task<int>
+schedulable_with_plain_task(execution::scheduler& sched) {
     int val = co_await plain_task();
     co_return val * 3;
 }
@@ -290,7 +297,8 @@ TEST(SchedulableTaskTest, CoawaitPlainTask) {
 
 namespace {
 
-schedulable_task<int> accumulating_task(execution::scheduler& sched, int base) {
+resumable::schedulable_task<int> accumulating_task(execution::scheduler& sched,
+                                                   int base) {
     co_return base * 2;
 }
 

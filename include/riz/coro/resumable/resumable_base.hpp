@@ -1,55 +1,36 @@
 #pragma once
 
 #include <riz/constraints.h>
+#include <riz/coro/constraint/resumable.hpp>
 
 #include <cassert>
 #include <coroutine>
 #include <utility>
 
-namespace riz::coro {
+namespace riz::coro::resumable {
 
-template<typename T>
-concept Resumable = requires {
-    typename T::promise_type;
-    requires T::tag_is_resumable;
-};
-
-template<typename T>
-concept ResumableTrait = requires {
-    typename T::resumable_type;
-    typename T::promise_type;
-};
-
-template<template<typename> typename ResumableT,
-         template<typename> typename PromiseT, typename T>
-struct resumable_trait {
-    using return_type = T;
-    using resumable_type = ResumableT<return_type>;
-    using promise_type = PromiseT<return_type>;
-};
-
-template<ResumableTrait TraitT>
-class resumable : public moveonly {
+template<constraint::resumable_pair ResumablePairT>
+class resumable_base : public moveonly {
 public:
-    using resumable_trait_type = TraitT;
-    using return_type = resumable_trait_type::return_type;
-    using resumable_type = resumable_trait_type::resumable_type;
-    using promise_type = resumable_trait_type::promise_type;
+    using resumable_pair_type = ResumablePairT;
+    using return_type = resumable_pair_type::return_type;
+    using resumable_type = resumable_pair_type::resumable_type;
+    using promise_type = resumable_pair_type::promise_type;
     static constexpr bool tag_is_resumable = true;
 
-    explicit resumable(std::coroutine_handle<promise_type> h)
+    explicit resumable_base(std::coroutine_handle<promise_type> h)
         : handle_ {h} {}
 
-    ~resumable() {
+    ~resumable_base() {
         if (handle_) {
             handle_.destroy();
         }
     }
 
-    resumable(resumable&& r)
+    resumable_base(resumable_base&& r)
         : handle_ {std::exchange(r.handle_, {})} {}
 
-    resumable& operator=(resumable&& r) noexcept {
+    resumable_base& operator=(resumable_base&& r) noexcept {
         if (this == &r) {
             return *this;
         }
@@ -89,4 +70,4 @@ private:
     std::coroutine_handle<promise_type> handle_;
 };
 
-} // namespace riz::coro
+} // namespace riz::coro::resumable
