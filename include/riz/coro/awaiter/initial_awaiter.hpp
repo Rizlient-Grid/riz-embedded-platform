@@ -21,7 +21,7 @@ struct initial_awaiter {
     void await_suspend(std::coroutine_handle<>) noexcept {}
 
     void await_resume() noexcept {
-        promise_.started_ = true;
+        promise_.started = true;
     }
 };
 

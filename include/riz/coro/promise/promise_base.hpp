@@ -25,8 +25,8 @@ struct promise_base {
     using resumable_type = resumable_pair_type::resumable_type;
     using promise_type = resumable_pair_type::promise_type;
 
-    std::coroutine_handle<> continuation_;
-    bool started_ {false};
+    std::coroutine_handle<> continuation;
+    bool started {false};
 
     resumable_type get_return_object() {
         auto handle = std::coroutine_handle<promise_type>::from_promise(
@@ -39,7 +39,7 @@ struct promise_base {
     }
 
     auto final_suspend() noexcept {
-        return awaiter::final_awaiter {continuation_};
+        return awaiter::final_awaiter {continuation};
     }
 
     void unhandled_exception() noexcept {

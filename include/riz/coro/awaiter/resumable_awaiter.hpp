@@ -20,8 +20,8 @@ struct resumable_awaiter {
     }
 
     std::coroutine_handle<> await_suspend(std::coroutine_handle<> h) noexcept {
-        assert(!resumable_.handle().promise().started_);
-        resumable_.handle().promise().continuation_ = h;
+        assert(!resumable_.handle().promise().started);
+        resumable_.handle().promise().continuation = h;
         return resumable_.handle();
     }
 
