@@ -11,7 +11,7 @@ start(resumable::schedulable_task<T>&& task) {
     auto& promise = task.promise();
     auto& executor = promise.executor;
     auto& schedulable_node = promise.schedulable_node;
-    assert(!promise.started_);
+    assert(!promise.started);
     executor.post(schedulable_node);
     return std::move(task);
 }
