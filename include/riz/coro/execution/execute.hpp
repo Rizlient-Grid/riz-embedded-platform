@@ -6,11 +6,12 @@
 namespace riz::coro::execution {
 
 template<typename T>
-[[nodiscard]] resumable::schedulable_task<T>
-start(resumable::schedulable_task<T>&& task) {
+[[nodiscard]] resumable::schedulable_task<T> start(
+    resumable::schedulable_task<T>&& task) {
     auto& promise = task.promise();
-    auto& executor = promise.executor;
     auto& schedulable_node = promise.schedulable_node;
+    assert(schedulable_node.executor);
+    auto& executor = *schedulable_node.executor;
     assert(!promise.started);
     executor.post(schedulable_node);
     return std::move(task);

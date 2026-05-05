@@ -7,7 +7,7 @@
 
 TEST(TaskTest, HasCorrectPromiseType) {
     static_assert(std::is_same_v<riz::coro::resumable::task<int>::promise_type,
-                                 riz::coro::promise::task_promise<int>>);
+        riz::coro::promise::task_promise<int>>);
 }
 
 TEST(TaskTest, SizeIsOnePointer) {

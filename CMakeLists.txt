@@ -14,5 +14,7 @@ if(RIZ_ENABLE_ASAN)
     add_link_options(-fsanitize=address)
 endif()
 
+set(RIZ_HAL "unix" CACHE STRING "Target platform")
+
 add_subdirectory(src)
 add_subdirectory(tests)
