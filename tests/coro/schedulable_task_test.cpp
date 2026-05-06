@@ -17,10 +17,10 @@ using namespace riz::coro;
 
 TEST(SchedulableTaskTest, HasCorrectPromiseType) {
     static_assert(std::is_same_v<resumable::schedulable_task<int>::promise_type,
-                                 promise::schedulable_task_promise<int>>);
+        promise::schedulable_task_promise<int>>);
     static_assert(
         std::is_same_v<resumable::schedulable_task<void>::promise_type,
-                       promise::schedulable_task_promise<void>>);
+            promise::schedulable_task_promise<void>>);
 }
 
 TEST(SchedulableTaskTest, HasCorrectReturnType) {
@@ -30,7 +30,7 @@ TEST(SchedulableTaskTest, HasCorrectReturnType) {
         std::is_same_v<resumable::schedulable_task<void>::return_type, void>);
     static_assert(
         std::is_same_v<resumable::schedulable_task<double>::return_type,
-                       double>);
+            double>);
 }
 
 TEST(SchedulableTaskTest, TagIsResumable) {
@@ -88,8 +88,8 @@ resumable::schedulable_task<int> simple_int_task(execution::scheduler& sched) {
     co_return 42;
 }
 
-resumable::schedulable_task<void>
-simple_void_task(execution::scheduler& sched) {
+resumable::schedulable_task<void> simple_void_task(
+    execution::scheduler& sched) {
     co_return;
 }
 
@@ -130,8 +130,8 @@ TEST(SchedulableTaskTest, DoneIsFalseBeforeRun) {
 namespace {
 
 // Records the order in which coroutines execute
-resumable::schedulable_task<void> ordered_task(execution::scheduler& sched,
-                                               int id, std::vector<int>& log) {
+resumable::schedulable_task<void> ordered_task(
+    execution::scheduler& sched, int id, std::vector<int>& log) {
     log.push_back(id);
     co_return;
 }
@@ -249,8 +249,8 @@ TEST(SchedulableTaskTest, CoawaitChainedTasks) {
 
 namespace {
 
-resumable::schedulable_task<int*> pointer_task(execution::scheduler& sched,
-                                               int* ptr) {
+resumable::schedulable_task<int*> pointer_task(
+    execution::scheduler& sched, int* ptr) {
     co_return ptr;
 }
 
@@ -275,8 +275,8 @@ riz::coro::resumable::task<int> plain_task() {
     co_return 7;
 }
 
-resumable::schedulable_task<int>
-schedulable_with_plain_task(execution::scheduler& sched) {
+resumable::schedulable_task<int> schedulable_with_plain_task(
+    execution::scheduler& sched) {
     int val = co_await plain_task();
     co_return val * 3;
 }
@@ -297,8 +297,8 @@ TEST(SchedulableTaskTest, CoawaitPlainTask) {
 
 namespace {
 
-resumable::schedulable_task<int> accumulating_task(execution::scheduler& sched,
-                                                   int base) {
+resumable::schedulable_task<int> accumulating_task(
+    execution::scheduler& sched, int base) {
     co_return base * 2;
 }
 

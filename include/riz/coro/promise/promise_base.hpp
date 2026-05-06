@@ -12,7 +12,7 @@
 namespace riz::coro::promise {
 
 template<template<typename> typename ResumableT,
-         template<typename> typename PromiseT, typename T>
+    template<typename> typename PromiseT, typename T>
 struct resumable_pair {
     using return_type = T;
     using resumable_type = ResumableT<return_type>;
@@ -52,6 +52,12 @@ struct promise_base {
     template<constraint::resumable T>
     auto await_transform(T&& awaitable) {
         return awaiter::resumable_awaiter<T> {std::move(awaitable)};
+    }
+
+    template<typename T>
+        requires(!constraint::resumable<std::remove_cvref_t<T>>)
+    decltype(auto) await_transform(T&& awaitable) noexcept {
+        return static_cast<T&&>(awaitable);
     }
 };
 
