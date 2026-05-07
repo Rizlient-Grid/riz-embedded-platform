@@ -25,6 +25,10 @@ add_executable(fifo_queue_test container/fifo_queue_test.cpp)
 target_link_libraries(fifo_queue_test GTest::gtest_main riz)
 target_include_directories(fifo_queue_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
+add_executable(ring_queue_test container/ring_queue_test.cpp)
+target_link_libraries(ring_queue_test GTest::gtest_main riz)
+target_include_directories(ring_queue_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
 add_executable(timer_service_test timer/timer_service_test.cpp)
 target_link_libraries(timer_service_test GTest::gtest_main riz_test)
 target_include_directories(timer_service_test PRIVATE
@@ -42,5 +46,6 @@ gtest_discover_tests(task_test)
 gtest_discover_tests(schedulable_task_test)
 gtest_discover_tests(delta_queue_test)
 gtest_discover_tests(fifo_queue_test)
+gtest_discover_tests(ring_queue_test)
 gtest_discover_tests(timer_service_test)
 gtest_discover_tests(timer_awaiter_test)
