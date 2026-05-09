@@ -44,9 +44,12 @@ TEST_F(RingQueueTest, PushMultiple) {
     EXPECT_EQ(q.size(), 3);
 
     int val;
-    EXPECT_TRUE(q.pop_front(val)); EXPECT_EQ(val, 1);
-    EXPECT_TRUE(q.pop_front(val)); EXPECT_EQ(val, 2);
-    EXPECT_TRUE(q.pop_front(val)); EXPECT_EQ(val, 3);
+    EXPECT_TRUE(q.pop_front(val));
+    EXPECT_EQ(val, 1);
+    EXPECT_TRUE(q.pop_front(val));
+    EXPECT_EQ(val, 2);
+    EXPECT_TRUE(q.pop_front(val));
+    EXPECT_EQ(val, 3);
     EXPECT_TRUE(q.empty());
 }
 
@@ -57,7 +60,7 @@ TEST_F(RingQueueTest, OverwriteWhenFull) {
     q.push(1);
     q.push(2);
     q.push(3);
-    
+
     // Now it's full. Pushing 4 should overwrite 1.
     q.push(4);
     EXPECT_EQ(q.size(), 3);
@@ -65,15 +68,19 @@ TEST_F(RingQueueTest, OverwriteWhenFull) {
 
     int val;
     // Expected order: 2, 3, 4
-    EXPECT_TRUE(q.pop_front(val)); EXPECT_EQ(val, 2);
-    EXPECT_TRUE(q.pop_front(val)); EXPECT_EQ(val, 3);
-    
+    EXPECT_TRUE(q.pop_front(val));
+    EXPECT_EQ(val, 2);
+    EXPECT_TRUE(q.pop_front(val));
+    EXPECT_EQ(val, 3);
+
     // Push another while not fully empty
     q.push(5);
     EXPECT_EQ(q.size(), 2);
 
-    EXPECT_TRUE(q.pop_front(val)); EXPECT_EQ(val, 4);
-    EXPECT_TRUE(q.pop_front(val)); EXPECT_EQ(val, 5);
+    EXPECT_TRUE(q.pop_front(val));
+    EXPECT_EQ(val, 4);
+    EXPECT_TRUE(q.pop_front(val));
+    EXPECT_EQ(val, 5);
     EXPECT_TRUE(q.empty());
 }
 
@@ -105,11 +112,14 @@ TEST_F(RingQueueTest, WrapAround) {
     q.push(5);
 
     EXPECT_EQ(q.size(), 3);
-    
+
     // Remaining elements should be 3, 4, 5
-    EXPECT_TRUE(q.pop_front(val)); EXPECT_EQ(val, 3);
-    EXPECT_TRUE(q.pop_front(val)); EXPECT_EQ(val, 4);
-    EXPECT_TRUE(q.pop_front(val)); EXPECT_EQ(val, 5);
+    EXPECT_TRUE(q.pop_front(val));
+    EXPECT_EQ(val, 3);
+    EXPECT_TRUE(q.pop_front(val));
+    EXPECT_EQ(val, 4);
+    EXPECT_TRUE(q.pop_front(val));
+    EXPECT_EQ(val, 5);
     EXPECT_TRUE(q.empty());
 }
 
@@ -130,7 +140,7 @@ TEST_F(RingQueueTest, CustomTriviallyCopyableType) {
 
     Point p;
     EXPECT_TRUE(q.pop_front(p));
-    EXPECT_EQ(p, (Point{3, 4}));
+    EXPECT_EQ(p, (Point {3, 4}));
     EXPECT_TRUE(q.pop_front(p));
-    EXPECT_EQ(p, (Point{5, 6}));
+    EXPECT_EQ(p, (Point {5, 6}));
 }

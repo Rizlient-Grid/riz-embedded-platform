@@ -1,6 +1,6 @@
 #pragma once
 
-#include <riz/constraints.h>
+#include <riz/container/detail/ring_queue.h>
 
 #include <cstddef>
 #include <type_traits>
@@ -9,53 +9,36 @@ namespace riz::container {
 
 template<typename T>
     requires std::is_trivially_copyable_v<T>
-class ring_queue : public immovable {
+class ring_queue : public detail::ring_queue {
 public:
-    template<std::size_t N>
-        requires(N > 0)
-    ring_queue(T (&buffer)[N])
-        : buffer_ {buffer}
-        , capacity_ {N} {}
+    template<std::size_t Capacity>
+        requires(Capacity > 0)
+    ring_queue(T (&buffer)[Capacity])
+        : detail::ring_queue {buffer, sizeof(T), Capacity} {}
+
+    ring_queue(ring_queue&&) noexcept = default;
+
+    ring_queue& operator=(ring_queue&&) noexcept = default;
 
     [[nodiscard]] bool empty() const noexcept {
-        return size_ == 0;
+        return detail::ring_queue::empty();
     }
 
     [[nodiscard]] std::size_t size() const noexcept {
-        return size_;
+        return detail::ring_queue::size();
     }
 
     [[nodiscard]] std::size_t capacity() const noexcept {
-        return capacity_;
-    };
+        return detail::ring_queue::capacity();
+    }
 
     bool pop_front(T& value) noexcept {
-        if (empty()) {
-            return false;
-        }
-        value = buffer_[head_];
-        head_ = (head_ + 1) % capacity_;
-        --size_;
-        return true;
+        return detail::ring_queue::pop_front(&value);
     }
 
     void push(const T& value) noexcept {
-        const bool full = (size_ == capacity_);
-        buffer_[tail_] = value;
-        tail_ = (tail_ + 1) % capacity_;
-        if (!full) {
-            ++size_;
-        } else {
-            head_ = (head_ + 1) % capacity_;
-        }
+        detail::ring_queue::push(&value);
     }
-
-private:
-    T* buffer_ {nullptr};
-    const std::size_t capacity_;
-    std::size_t head_ {0};
-    std::size_t tail_ {0};
-    std::size_t size_ {0};
 };
 
 } // namespace riz::container

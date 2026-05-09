@@ -12,6 +12,7 @@
         "--header-insertion=never",
         "--background-index"
     ],
+    "C_Cpp.intelliSenseEngine": "disabled",
     "files.associations": {
         "__tree": "cpp",
         "__hash_table": "cpp",
