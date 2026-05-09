@@ -1,4 +1,5 @@
 add_library(riz_core OBJECT
+    container/detail/ring_queue.cpp
     container/intrusive/delta_queue.cpp
     container/intrusive/fifo_queue.cpp
     coro/execution/scheduler.cpp
