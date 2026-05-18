@@ -1,0 +1,25 @@
+include/riz/container/ring_queue.hpp
+  h_b4153c87f08e2b 27-30,45-48
+src/container/detail/ring_queue.cpp
+  h_b4153c87f08e2b 54-59
+include/riz/coro/channel/channel.hpp
+  h_b4153c87f08e2b 1-109
+include/riz/container/detail/ring_queue.h
+  h_b4153c87f08e2b 21-24,35
+include/riz/container/static_ring_buffer.hpp
+  h_b4153c87f08e2b 1-43
+include/riz/coro/awaiter/channel_send_awaiter.hpp
+  h_b4153c87f08e2b 1-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "8d5be17909167e3c40f482902ed1cb649a39c122",
+  "prompts": {},
+  "logical_commit_id": "8d5be17909167e3c40f482902ed1cb649a39c122",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
