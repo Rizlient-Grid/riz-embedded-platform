@@ -18,6 +18,10 @@ public:
         return size_ == 0;
     }
 
+    [[nodiscard]] bool full() const noexcept {
+        return size_ == capacity_;
+    }
+
     [[nodiscard]] std::size_t size() const noexcept {
         return size_;
     }
@@ -28,6 +32,7 @@ public:
 
     bool pop_front(void* value) noexcept;
     void push(const void* value) noexcept;
+    void clear() noexcept;
 
 private:
     std::byte* buffer_ {nullptr};

@@ -41,6 +41,10 @@ target_include_directories(timer_awaiter_test PRIVATE
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/tests/helpers)
 
+add_executable(channel_test coro/channel_test.cpp)
+target_link_libraries(channel_test GTest::gtest_main riz)
+target_include_directories(channel_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
 include(GoogleTest)
 gtest_discover_tests(task_test)
 gtest_discover_tests(schedulable_task_test)
@@ -49,3 +53,4 @@ gtest_discover_tests(fifo_queue_test)
 gtest_discover_tests(ring_queue_test)
 gtest_discover_tests(timer_service_test)
 gtest_discover_tests(timer_awaiter_test)
+gtest_discover_tests(channel_test)

@@ -24,6 +24,10 @@ public:
         return detail::ring_queue::empty();
     }
 
+    [[nodiscard]] bool full() const noexcept {
+        return detail::ring_queue::full();
+    }
+
     [[nodiscard]] std::size_t size() const noexcept {
         return detail::ring_queue::size();
     }
@@ -38,6 +42,10 @@ public:
 
     void push(const T& value) noexcept {
         detail::ring_queue::push(&value);
+    }
+
+    void clear() noexcept {
+        detail::ring_queue::clear();
     }
 };
 
