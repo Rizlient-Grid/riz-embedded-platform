@@ -24,7 +24,7 @@ private:
 private:
     [[no_unique_address]] hal::tick_source tick_source_;
     container::intrusive::delta_queue delta_queue_;
-    std::uint32_t prev_ts_tick;
+    std::uint32_t prev_ts_tick_;
 };
 
 } // namespace riz::timer

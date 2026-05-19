@@ -51,3 +51,9 @@ void ring_queue::push(const void* value) noexcept {
         head_ = (head_ + 1) % capacity_;
     }
 }
+
+void ring_queue::clear() noexcept {
+    head_ = 0;
+    tail_ = 0;
+    size_ = 0;
+}
