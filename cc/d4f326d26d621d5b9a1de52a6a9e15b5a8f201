@@ -1,0 +1,19 @@
+include/riz/coro/awaiter/channel_send_awaiter.hpp
+  h_b4153c87f08e2b 22,25-28,35,39
+include/riz/coro/awaiter/channel_receive_awaiter.hpp
+  h_b4153c87f08e2b 3-10,13,15-43,45-48
+include/riz/coro/channel/channel.hpp
+  h_b4153c87f08e2b 11,46,73,77,91,95,99,111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "ccd4f326d26d621d5b9a1de52a6a9e15b5a8f201",
+  "prompts": {},
+  "logical_commit_id": "ccd4f326d26d621d5b9a1de52a6a9e15b5a8f201",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
