@@ -1,0 +1,19 @@
+include/riz/coro/channel/channel.hpp
+  h_b4153c87f08e2b 25-28,36,49-52,56,59,70,80,84
+tests/CMakeLists.txt
+  h_b4153c87f08e2b 44-47,56
+tests/coro/channel_test.cpp
+  h_b4153c87f08e2b 1-451
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "e5c74c36463e1ba5e52f3abfb9b099899b1ff6eb",
+  "prompts": {},
+  "logical_commit_id": "e5c74c36463e1ba5e52f3abfb9b099899b1ff6eb",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
