@@ -8,7 +8,7 @@ void scheduler::post(node_type& entry) noexcept {
 
 void scheduler::run() noexcept {
     while (fifo_queue::node_type* n = ready_queue_.pop_front()) {
-        node_type* tn = static_cast<node_type*>(n);
+        auto tn = static_cast<node_type*>(n);
         if (tn->coro_handle) {
             tn->coro_handle.resume();
         }
@@ -17,7 +17,7 @@ void scheduler::run() noexcept {
 
 bool scheduler::run_once() noexcept {
     if (fifo_queue::node_type* n = ready_queue_.pop_front()) {
-        node_type* tn = static_cast<node_type*>(n);
+        auto tn = static_cast<node_type*>(n);
         if (tn->coro_handle) {
             tn->coro_handle.resume();
         }

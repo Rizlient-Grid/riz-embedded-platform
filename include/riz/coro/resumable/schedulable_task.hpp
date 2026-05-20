@@ -19,8 +19,7 @@ resumable::schedulable_task<T> start(resumable::schedulable_task<T>&& task);
 namespace riz::coro::resumable {
 
 template<typename T>
-class schedulable_task
-    : private resumable_base<promise::schedulable_task_pair<T>> {
+class schedulable_task : private resumable_base<promise::schedulable_task_pair<T>> {
 public:
     using return_type = T;
     using promise_type = promise::schedulable_task_pair<T>::promise_type;

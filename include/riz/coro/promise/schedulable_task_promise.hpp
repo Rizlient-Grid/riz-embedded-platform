@@ -19,8 +19,7 @@ template<typename T>
 struct schedulable_task_promise;
 template<typename T>
 using schedulable_task_pair =
-    promise::resumable_pair<resumable::schedulable_task,
-        schedulable_task_promise, T>;
+    promise::resumable_pair<resumable::schedulable_task, schedulable_task_promise, T>;
 
 template<typename T>
 struct schedulable_task_promise : promise_base<schedulable_task_pair<T>> {
@@ -33,9 +32,8 @@ struct schedulable_task_promise : promise_base<schedulable_task_pair<T>> {
     template<typename... Ts>
     schedulable_task_promise(execution::scheduler& sched, Ts&&...)
         : schedulable_node {.executor = &sched,
-              .coro_handle =
-                  std::coroutine_handle<schedulable_task_promise>::from_promise(
-                      *this)} {}
+              .coro_handle = std::coroutine_handle<schedulable_task_promise>::from_promise(*this)} {
+    }
 
     void return_value(return_type&& value) {
         result = std::move(value);
@@ -47,8 +45,7 @@ struct schedulable_task_promise : promise_base<schedulable_task_pair<T>> {
 };
 
 template<>
-struct schedulable_task_promise<void>
-    : promise_base<schedulable_task_pair<void>> {
+struct schedulable_task_promise<void> : promise_base<schedulable_task_pair<void>> {
     using resumable_type = schedulable_task_pair<void>::resumable_type;
 
     execution::schedulable_node schedulable_node;
@@ -56,9 +53,8 @@ struct schedulable_task_promise<void>
     template<typename... Ts>
     schedulable_task_promise(execution::scheduler& sched, Ts&&...)
         : schedulable_node {.executor = &sched,
-              .coro_handle =
-                  std::coroutine_handle<schedulable_task_promise>::from_promise(
-                      *this)} {}
+              .coro_handle = std::coroutine_handle<schedulable_task_promise>::from_promise(*this)} {
+    }
 
     void return_void() noexcept {}
 };

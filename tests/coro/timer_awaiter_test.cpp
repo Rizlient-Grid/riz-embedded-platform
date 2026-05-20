@@ -34,8 +34,7 @@ TEST_F(TimerAwaiterTest, SleepZeroDoesNotSuspend) {
     execution::scheduler sched;
     bool reached = false;
 
-    auto task = [](execution::scheduler& sched,
-                    bool& flag) -> resumable::schedulable_task<void> {
+    auto task = [](execution::scheduler& sched, bool& flag) -> resumable::schedulable_task<void> {
         co_await riz::coro::sleep(0u);
         flag = true;
         co_return;
@@ -52,8 +51,7 @@ TEST_F(TimerAwaiterTest, SleepPositiveSuspendsAndResumes) {
     execution::scheduler sched;
     bool reached = false;
 
-    auto task = [](execution::scheduler& sched,
-                    bool& flag) -> resumable::schedulable_task<void> {
+    auto task = [](execution::scheduler& sched, bool& flag) -> resumable::schedulable_task<void> {
         co_await riz::coro::sleep(5u);
         flag = true;
         co_return;
@@ -77,8 +75,7 @@ TEST_F(TimerAwaiterTest, SleepChronoMillisecondsConvertsCorrectly) {
     execution::scheduler sched;
     bool reached = false;
 
-    auto task = [](execution::scheduler& sched,
-                    bool& flag) -> resumable::schedulable_task<void> {
+    auto task = [](execution::scheduler& sched, bool& flag) -> resumable::schedulable_task<void> {
         co_await riz::coro::sleep(std::chrono::milliseconds(5));
         flag = true;
         co_return;
@@ -102,8 +99,7 @@ TEST_F(TimerAwaiterTest, SleepChronoSecondsConvertsCorrectly) {
     execution::scheduler sched;
     int value = 0;
 
-    auto task = [](execution::scheduler& sched,
-                    int& val) -> resumable::schedulable_task<void> {
+    auto task = [](execution::scheduler& sched, int& val) -> resumable::schedulable_task<void> {
         co_await riz::coro::sleep(std::chrono::seconds(1));
         val = 42;
         co_return;
@@ -127,8 +123,7 @@ TEST_F(TimerAwaiterTest, SleepZeroChronoDoesNotSuspend) {
     execution::scheduler sched;
     bool reached = false;
 
-    auto task = [](execution::scheduler& sched,
-                    bool& flag) -> resumable::schedulable_task<void> {
+    auto task = [](execution::scheduler& sched, bool& flag) -> resumable::schedulable_task<void> {
         co_await riz::coro::sleep(std::chrono::milliseconds(0));
         flag = true;
         co_return;
@@ -145,9 +140,8 @@ TEST_F(TimerAwaiterTest, MultipleSleepInSequence) {
     execution::scheduler sched;
     std::vector<int> sequence;
 
-    auto task =
-        [](execution::scheduler& sched,
-            std::vector<int>& seq) -> resumable::schedulable_task<void> {
+    auto task = [](execution::scheduler& sched,
+                    std::vector<int>& seq) -> resumable::schedulable_task<void> {
         seq.push_back(1);
         co_await riz::coro::sleep(5u);
         seq.push_back(2);
@@ -181,8 +175,7 @@ TEST_F(TimerAwaiterTest, MultipleSleepInSequence) {
 TEST_F(TimerAwaiterTest, CoroutineValuePreservedAfterSleep) {
     execution::scheduler sched;
 
-    auto task =
-        [](execution::scheduler& sched) -> resumable::schedulable_task<int> {
+    auto task = [](execution::scheduler& sched) -> resumable::schedulable_task<int> {
         int x = 10;
         int y = 20;
         co_await riz::coro::sleep(3u);

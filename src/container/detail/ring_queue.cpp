@@ -7,8 +7,7 @@
 
 using namespace riz::container::detail;
 
-ring_queue::ring_queue(
-    void* buffer, std::size_t entry_size, std::size_t capacity)
+ring_queue::ring_queue(void* buffer, std::size_t entry_size, std::size_t capacity)
     : buffer_ {static_cast<std::byte*>(buffer)}
     , entry_size_ {entry_size}
     , capacity_ {capacity} {}
@@ -24,7 +23,7 @@ ring_queue::ring_queue(ring_queue&& rhs) noexcept
 ring_queue& ring_queue::operator=(ring_queue&& rhs) noexcept {
     if (this != &rhs) {
         this->~ring_queue();
-        new(this) ring_queue {std::move(rhs)};
+        new (this) ring_queue {std::move(rhs)};
     }
     return *this;
 }

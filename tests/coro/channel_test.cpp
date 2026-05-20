@@ -11,6 +11,8 @@
 
 using namespace riz::coro;
 
+using ec = channel::errcode;
+
 // ---------------------------------------------------------------------------
 // Static type trait tests
 // ---------------------------------------------------------------------------
@@ -48,30 +50,30 @@ TEST(ChannelTest, RequiresTriviallyCopyableT) {
 TEST(ChannelTest, BufferedTrySendTryReceive) {
     channel::channel<int, 2> ch;
 
-    EXPECT_TRUE(ch.try_send(10));
-    EXPECT_TRUE(ch.try_send(20));
-    EXPECT_FALSE(ch.try_send(30));
+    EXPECT_EQ(ch.try_send(10), ec::success);
+    EXPECT_EQ(ch.try_send(20), ec::success);
+    EXPECT_EQ(ch.try_send(30), ec::full);
 
     int val = 0;
-    EXPECT_TRUE(ch.try_receive(val));
+    EXPECT_EQ(ch.try_receive(val), ec::success);
     EXPECT_EQ(val, 10);
 
-    EXPECT_TRUE(ch.try_receive(val));
+    EXPECT_EQ(ch.try_receive(val), ec::success);
     EXPECT_EQ(val, 20);
 
-    EXPECT_FALSE(ch.try_receive(val));
+    EXPECT_EQ(ch.try_receive(val), ec::empty);
 }
 
 TEST(ChannelTest, BufferedFIFOOrder) {
     channel::channel<int, 4> ch;
 
     for (int i = 1; i <= 4; ++i) {
-        EXPECT_TRUE(ch.try_send(i));
+        EXPECT_EQ(ch.try_send(i), ec::success);
     }
 
     int val = 0;
     for (int i = 1; i <= 4; ++i) {
-        EXPECT_TRUE(ch.try_receive(val));
+        EXPECT_EQ(ch.try_receive(val), ec::success);
         EXPECT_EQ(val, i);
     }
 }
@@ -79,7 +81,7 @@ TEST(ChannelTest, BufferedFIFOOrder) {
 TEST(ChannelTest, BufferedRefusesSendAfterClose) {
     channel::channel<int, 2> ch;
     ch.close();
-    EXPECT_FALSE(ch.try_send(1));
+    EXPECT_EQ(ch.try_send(1), ec::closed);
 }
 
 TEST(ChannelTest, BufferedDrainsPendingOnClose) {
@@ -87,10 +89,9 @@ TEST(ChannelTest, BufferedDrainsPendingOnClose) {
     channel::channel<int, 1> ch;
 
     bool receiver_reached = false;
-    int received_status = 99;
+    channel::errcode received_status = static_cast<channel::errcode>(99);
 
-    auto recv_task = [&](execution::scheduler& s)
-        -> resumable::schedulable_task<void> {
+    auto recv_task = [&](execution::scheduler& s) -> resumable::schedulable_task<void> {
         int val = 0;
         received_status = co_await ch.receive(val);
         receiver_reached = true;
@@ -105,7 +106,7 @@ TEST(ChannelTest, BufferedDrainsPendingOnClose) {
     sched.run();
 
     EXPECT_TRUE(receiver_reached);
-    EXPECT_EQ(received_status, -1);
+    EXPECT_EQ(received_status, ec::canceled);
     EXPECT_TRUE(t.done());
 }
 
@@ -115,26 +116,26 @@ TEST(ChannelTest, BufferedDrainsPendingOnClose) {
 
 TEST(ChannelTest, UnbufferedTrySendFailsNoReceiver) {
     channel::channel<int> ch;
-    EXPECT_FALSE(ch.try_send(1));
+    EXPECT_EQ(ch.try_send(1), ec::full);
 }
 
 TEST(ChannelTest, UnbufferedTryReceiveFailsNoSender) {
     channel::channel<int> ch;
     int val = 0;
-    EXPECT_FALSE(ch.try_receive(val));
+    EXPECT_EQ(ch.try_receive(val), ec::empty);
 }
 
 TEST(ChannelTest, UnbufferedRefusesSendAfterClose) {
     channel::channel<int> ch;
     ch.close();
-    EXPECT_FALSE(ch.try_send(1));
+    EXPECT_EQ(ch.try_send(1), ec::closed);
 }
 
 TEST(ChannelTest, UnbufferedRefusesReceiveAfterClose) {
     channel::channel<int> ch;
     int val = 0;
     ch.close();
-    EXPECT_FALSE(ch.try_receive(val));
+    EXPECT_EQ(ch.try_receive(val), ec::closed);
 }
 
 // ---------------------------------------------------------------------------
@@ -145,15 +146,15 @@ namespace {
 
 resumable::schedulable_task<void> sender_task(
     execution::scheduler& sched, channel::channel<int>& ch, int value) {
-    int rc = co_await ch.send(value);
-    EXPECT_EQ(rc, 0);
+    channel::errcode rc = co_await ch.send(value);
+    EXPECT_EQ(rc, ec::success);
     co_return;
 }
 
 resumable::schedulable_task<void> receiver_task(
     execution::scheduler& sched, channel::channel<int>& ch, int& out) {
-    int rc = co_await ch.receive(out);
-    EXPECT_EQ(rc, 0);
+    channel::errcode rc = co_await ch.receive(out);
+    EXPECT_EQ(rc, ec::success);
     co_return;
 }
 
@@ -202,10 +203,9 @@ TEST(ChannelTest, BufferedSendSucceedsImmediately) {
     execution::scheduler sched;
     channel::channel<int, 2> ch;
 
-    auto task = [&](execution::scheduler& s)
-        -> resumable::schedulable_task<void> {
-        int rc = co_await ch.send(7);
-        EXPECT_EQ(rc, 0);
+    auto task = [&](execution::scheduler& s) -> resumable::schedulable_task<void> {
+        channel::errcode rc = co_await ch.send(7);
+        EXPECT_EQ(rc, ec::success);
         co_return;
     };
 
@@ -215,7 +215,7 @@ TEST(ChannelTest, BufferedSendSucceedsImmediately) {
     EXPECT_TRUE(t.done());
 
     int val = 0;
-    EXPECT_TRUE(ch.try_receive(val));
+    EXPECT_EQ(ch.try_receive(val), ec::success);
     EXPECT_EQ(val, 7);
 }
 
@@ -228,14 +228,12 @@ TEST(ChannelTest, MultipleRendezvousPairs) {
     channel::channel<int> ch;
     std::vector<int> results;
 
-    auto send_fn = [&](execution::scheduler&, int v)
-        -> resumable::schedulable_task<void> {
+    auto send_fn = [&](execution::scheduler&, int v) -> resumable::schedulable_task<void> {
         co_await ch.send(v);
         co_return;
     };
 
-    auto recv_fn = [&](execution::scheduler&, int& out)
-        -> resumable::schedulable_task<void> {
+    auto recv_fn = [&](execution::scheduler&, int& out) -> resumable::schedulable_task<void> {
         co_await ch.receive(out);
         co_return;
     };
@@ -272,10 +270,9 @@ TEST(ChannelTest, MultipleRendezvousPairs) {
 TEST(ChannelTest, CloseWakesPendingSenders) {
     execution::scheduler sched;
     channel::channel<int> ch;
-    int status = 0;
+    channel::errcode status {};
 
-    auto task = [&](execution::scheduler&)
-        -> resumable::schedulable_task<void> {
+    auto task = [&](execution::scheduler&) -> resumable::schedulable_task<void> {
         status = co_await ch.send(1);
         co_return;
     };
@@ -283,13 +280,13 @@ TEST(ChannelTest, CloseWakesPendingSenders) {
     auto t = execution::start(task(sched));
     sched.run();
     EXPECT_FALSE(t.done());
-    EXPECT_EQ(status, 0);
+    EXPECT_EQ(status, ec::success);
 
     ch.close();
     sched.run();
 
     EXPECT_TRUE(t.done());
-    EXPECT_EQ(status, -1);
+    EXPECT_EQ(status, ec::canceled);
 }
 
 // ---------------------------------------------------------------------------
@@ -299,10 +296,9 @@ TEST(ChannelTest, CloseWakesPendingSenders) {
 TEST(ChannelTest, CloseWakesPendingReceivers) {
     execution::scheduler sched;
     channel::channel<int> ch;
-    int status = 0;
+    channel::errcode status {};
 
-    auto task = [&](execution::scheduler&)
-        -> resumable::schedulable_task<void> {
+    auto task = [&](execution::scheduler&) -> resumable::schedulable_task<void> {
         int val = 0;
         status = co_await ch.receive(val);
         co_return;
@@ -311,13 +307,13 @@ TEST(ChannelTest, CloseWakesPendingReceivers) {
     auto t = execution::start(task(sched));
     sched.run();
     EXPECT_FALSE(t.done());
-    EXPECT_EQ(status, 0);
+    EXPECT_EQ(status, ec::success);
 
     ch.close();
     sched.run();
 
     EXPECT_TRUE(t.done());
-    EXPECT_EQ(status, -1);
+    EXPECT_EQ(status, ec::canceled);
 }
 
 // ---------------------------------------------------------------------------
@@ -329,10 +325,9 @@ TEST(ChannelTest, SendOnClosedChannelReturnsMinusOne) {
     channel::channel<int> ch;
     ch.close();
 
-    auto task = [&](execution::scheduler&)
-        -> resumable::schedulable_task<void> {
-        int rc = co_await ch.send(1);
-        EXPECT_EQ(rc, -1);
+    auto task = [&](execution::scheduler&) -> resumable::schedulable_task<void> {
+        channel::errcode rc = co_await ch.send(1);
+        EXPECT_EQ(rc, ec::closed);
         co_return;
     };
 
@@ -351,11 +346,10 @@ TEST(ChannelTest, ReceiveOnClosedChannelReturnsMinusOne) {
     channel::channel<int> ch;
     ch.close();
 
-    auto task = [&](execution::scheduler&)
-        -> resumable::schedulable_task<void> {
+    auto task = [&](execution::scheduler&) -> resumable::schedulable_task<void> {
         int val = 0;
-        int rc = co_await ch.receive(val);
-        EXPECT_EQ(rc, -1);
+        channel::errcode rc = co_await ch.receive(val);
+        EXPECT_EQ(rc, ec::closed);
         co_return;
     };
 
@@ -373,10 +367,9 @@ TEST(ChannelTest, BufferedSenderFlushedOnReceive) {
     execution::scheduler sched;
     channel::channel<int, 1> ch;
 
-    int sender_status = 99;
+    auto sender_status = static_cast<channel::errcode>(99);
 
-    auto send_fn = [&](execution::scheduler&)
-        -> resumable::schedulable_task<void> {
+    auto send_fn = [&](execution::scheduler&) -> resumable::schedulable_task<void> {
         sender_status = co_await ch.send(10);
         co_return;
     };
@@ -384,17 +377,16 @@ TEST(ChannelTest, BufferedSenderFlushedOnReceive) {
     auto s1 = execution::start(send_fn(sched));
     sched.run();
     EXPECT_TRUE(s1.done());
-    EXPECT_EQ(sender_status, 0);
+    EXPECT_EQ(sender_status, ec::success);
 
     auto s2 = execution::start(send_fn(sched));
     sched.run();
     EXPECT_FALSE(s2.done());
 
     int val = 0;
-    auto recv_fn = [&](execution::scheduler&, int& out)
-        -> resumable::schedulable_task<void> {
-        int rc = co_await ch.receive(out);
-        EXPECT_EQ(rc, 0);
+    auto recv_fn = [&](execution::scheduler&, int& out) -> resumable::schedulable_task<void> {
+        channel::errcode rc = co_await ch.receive(out);
+        EXPECT_EQ(rc, ec::success);
         co_return;
     };
 
@@ -404,7 +396,7 @@ TEST(ChannelTest, BufferedSenderFlushedOnReceive) {
     EXPECT_TRUE(s2.done());
     EXPECT_TRUE(r.done());
     EXPECT_EQ(val, 10);
-    EXPECT_EQ(sender_status, 0);
+    EXPECT_EQ(sender_status, ec::success);
 }
 
 // ---------------------------------------------------------------------------
@@ -413,19 +405,19 @@ TEST(ChannelTest, BufferedSenderFlushedOnReceive) {
 
 TEST(ChannelTest, FloatType) {
     channel::channel<float, 2> ch;
-    EXPECT_TRUE(ch.try_send(3.14f));
+    EXPECT_EQ(ch.try_send(3.14f), ec::success);
 
     float val = 0;
-    EXPECT_TRUE(ch.try_receive(val));
+    EXPECT_EQ(ch.try_receive(val), ec::success);
     EXPECT_FLOAT_EQ(val, 3.14f);
 }
 
 TEST(ChannelTest, Uint8Type) {
     channel::channel<uint8_t, 4> ch;
-    EXPECT_TRUE(ch.try_send(42));
+    EXPECT_EQ(ch.try_send(42), ec::success);
 
     uint8_t val = 0;
-    EXPECT_TRUE(ch.try_receive(val));
+    EXPECT_EQ(ch.try_receive(val), ec::success);
     EXPECT_EQ(val, 42);
 }
 
@@ -442,10 +434,10 @@ static_assert(std::is_trivially_copyable_v<point>);
 
 TEST(ChannelTest, StructType) {
     channel::channel<point, 2> ch;
-    EXPECT_TRUE(ch.try_send(point{3, 4}));
+    EXPECT_EQ(ch.try_send(point {3, 4}), ec::success);
 
     point val {};
-    EXPECT_TRUE(ch.try_receive(val));
+    EXPECT_EQ(ch.try_receive(val), ec::success);
     EXPECT_EQ(val.x, 3);
     EXPECT_EQ(val.y, 4);
 }

@@ -5,10 +5,10 @@
 #include <riz/container/static_ring_buffer.hpp>
 #include <riz/coro/awaiter/channel_receive_awaiter.hpp>
 #include <riz/coro/awaiter/channel_send_awaiter.hpp>
+#include <riz/coro/channel/errcode.hpp>
 #include <riz/coro/execution/schedulable_node.h>
 
 #include <cstddef>
-#include <cstring>
 #include <type_traits>
 
 namespace riz::coro::channel {
@@ -26,61 +26,58 @@ public:
         return {value, *this};
     }
 
-    [[nodiscard]] bool try_send(const T& value) noexcept {
+    [[nodiscard]] errcode try_send(const T& value) noexcept {
         if (closed_) {
-            return false;
+            return errcode::closed;
         }
-        if (!pending_receivers_.empty()) {
-            auto n = static_cast<node*>(pending_receivers_.pop_front());
-            std::memcpy(n->value, &value, sizeof(T));
+        if (auto n = static_cast<receiver_node*>(pending_receivers_.pop_front())) {
+            *n->value = value;
             n->sched_node->executor->post(*n->sched_node);
-            return true;
+            return errcode::success;
         }
         if constexpr (Capacity > 0) {
             if (buffer_.full()) {
-                return false;
+                return errcode::full;
             }
             buffer_.push(value);
-            return true;
+            return errcode::success;
         }
-        return false;
+        return errcode::full;
     }
 
     awaiter::channel_receive_awaiter<T, Capacity> receive(T& value) noexcept {
         return {value, *this};
     }
-    
-    [[nodiscard]] bool try_receive(T& value) noexcept {
+
+    [[nodiscard]] errcode try_receive(T& value) noexcept {
         if constexpr (Capacity > 0) {
-            if (!buffer_.empty()) {
-                (void)buffer_.pop_front(value);
-                if (auto n = static_cast<node*>(pending_senders_.pop_front())) {
+            if (buffer_.pop_front(value)) {
+                if (auto n = static_cast<sender_node*>(pending_senders_.pop_front())) {
                     buffer_.push(*n->value);
                     n->sched_node->executor->post(*n->sched_node);
                 }
-                return true;
+                return errcode::success;
             }
         }
         if (closed_) {
-            return false;
+            return errcode::closed;
         }
-        if (!pending_senders_.empty()) {
-            auto n = static_cast<node*>(pending_senders_.pop_front());
-            std::memcpy(&value, n->value, sizeof(T));
+        if (auto n = static_cast<sender_node*>(pending_senders_.pop_front())) {
+            value = *n->value;
             n->sched_node->executor->post(*n->sched_node);
-            return true;
+            return errcode::success;
         }
-        return false;
+        return errcode::empty;
     }
 
     void close() noexcept {
         closed_ = true;
-        while (auto n = static_cast<node*>(pending_senders_.pop_front())) {
-            n->status = -1;
+        while (auto n = static_cast<sender_node*>(pending_senders_.pop_front())) {
+            n->status = errcode::canceled;
             n->sched_node->executor->post(*n->sched_node);
         }
-        while (auto n = static_cast<node*>(pending_receivers_.pop_front())) {
-            n->status = -1;
+        while (auto n = static_cast<receiver_node*>(pending_receivers_.pop_front())) {
+            n->status = errcode::canceled;
             n->sched_node->executor->post(*n->sched_node);
         }
     }
@@ -91,18 +88,23 @@ public:
 
 private:
     using fifo_queue = container::intrusive::fifo_queue;
-    struct node : fifo_queue::node {
+    struct sender_node : fifo_queue::node {
+        execution::schedulable_node* sched_node {nullptr};
+        const T* value {nullptr};
+        errcode status {errcode::success};
+    };
+    struct receiver_node : fifo_queue::node {
         execution::schedulable_node* sched_node {nullptr};
         T* value {nullptr};
-        int status {0};
+        errcode status {errcode::success};
     };
 
 private:
-    void push_pending_sender(node& entry) noexcept {
+    void push_pending_sender(sender_node& entry) noexcept {
         pending_senders_.push(entry);
     }
 
-    void push_pending_receiver(node& entry) noexcept {
+    void push_pending_receiver(receiver_node& entry) noexcept {
         pending_receivers_.push(entry);
     }
 

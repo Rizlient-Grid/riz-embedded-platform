@@ -11,8 +11,7 @@
 
 namespace riz::coro::promise {
 
-template<template<typename> typename ResumableT,
-    template<typename> typename PromiseT, typename T>
+template<template<typename> typename ResumableT, template<typename> typename PromiseT, typename T>
 struct resumable_pair {
     using return_type = T;
     using resumable_type = ResumableT<return_type>;
@@ -29,8 +28,8 @@ struct promise_base {
     bool started {false};
 
     resumable_type get_return_object() {
-        auto handle = std::coroutine_handle<promise_type>::from_promise(
-            static_cast<promise_type&>(*this));
+        auto handle =
+            std::coroutine_handle<promise_type>::from_promise(static_cast<promise_type&>(*this));
         return resumable_type {handle};
     }
 
