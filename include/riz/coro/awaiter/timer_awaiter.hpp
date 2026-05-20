@@ -10,14 +10,6 @@
 
 namespace riz::coro::awaiter {
 
-namespace detail {
-template<typename>
-inline constexpr bool is_schedulable_task_promise_v = false;
-template<typename T>
-inline constexpr bool
-    is_schedulable_task_promise_v<promise::schedulable_task_promise<T>> = true;
-} // namespace detail
-
 class timer_awaiter {
 public:
     timer_awaiter(std::uint32_t sleep_duration, bool use_raw_tick = false)
@@ -34,7 +26,7 @@ public:
     }
 
     template<typename Promise>
-        requires detail::is_schedulable_task_promise_v<Promise>
+        requires constraint::is_schedulable_task_promise_v<Promise>
     void await_suspend(std::coroutine_handle<Promise> handle) noexcept {
         timer_node_.sched_node = &handle.promise().schedulable_node;
         timer_node_.on_expire = &on_expire;
