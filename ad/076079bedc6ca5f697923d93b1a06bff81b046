@@ -1,0 +1,62 @@
+include/riz/coro/promise/schedulable_task_promise.hpp
+  s_9a899da5bb2f79::t_561d9a4bd56bc9 22,35-36,48,56-57
+include/riz/coro/channel/channel.hpp
+  h_b4153c87f08e2b 8,29,31-34,36,40,43,45,51-52,54-55,59,63-66,68,70,75-76,79-80,91,93-94,96,99,103,107
+include/riz/coro/execution/execute.hpp
+  s_9a899da5bb2f79::t_ee6a6f679d0a8e 9
+include/riz/coro/awaiter/channel_receive_awaiter.hpp
+  h_b4153c87f08e2b 3-5,24-26,28-29,31-32,37,44,49,53-54,57
+include/riz/coro/awaiter/channel_send_awaiter.hpp
+  h_b4153c87f08e2b 3-5,24-26,28-29,31-32,37,44,49,53-54,57
+tests/coro/channel_test.cpp
+  h_b4153c87f08e2b 14-15,53-55,58,61,64,71,76,84,92,109,119,125,131,138,149-150,156-157,207-208,218,273,283,289,299,310,316,329-330,351-352,370,380,388-389,399,408,411,417,420,437,440
+.clang-format
+  h_b4153c87f08e2b 38
+src/coro/execution/scheduler.cpp
+  h_b4153c87f08e2b 11,20
+include/riz/coro/awaiter/timer_awaiter.hpp
+  h_b4153c87f08e2b 29
+src/container/detail/ring_queue.cpp
+  s_9a899da5bb2f79::t_97288e539e3884 10,26
+include/riz/coro/constraint/resumable.hpp
+  s_9a899da5bb2f79::t_2b4a949184debe 25
+  h_b4153c87f08e2b 3-7,22-24
+include/riz/coro/channel/errcode.hpp
+  h_b4153c87f08e2b 11-12
+  s_deee803b8d4e7e::t_1da6d524f90c6d 1-10,13-15
+include/riz/container/static_ring_buffer.hpp
+  s_deee803b8d4e7e::t_dc8b1b85cbbcc6 20
+  h_b4153c87f08e2b 10,13
+include/riz/coro/resumable/schedulable_task.hpp
+  s_9a899da5bb2f79::t_a7b5629d57a51c 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "ad076079bedc6ca5f697923d93b1a06bff81b046",
+  "prompts": {},
+  "logical_commit_id": "b5693cfc6368006030bf323880e70639b12fadf4",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_9a899da5bb2f79": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_1b99a4b6bffevH8mv6j6KLh90Z",
+        "model": "unknown"
+      },
+      "human_author": "ohyusheng <humbleoh@gmail.com>"
+    },
+    "s_deee803b8d4e7e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_1b99b06d5ffezdddW7IpexXEnD",
+        "model": "unknown"
+      },
+      "human_author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
