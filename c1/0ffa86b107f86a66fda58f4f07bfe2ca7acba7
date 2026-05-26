@@ -1,0 +1,15 @@
+src/port/stm32/tick_source.cpp
+  h_b4153c87f08e2b 1-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "c10ffa86b107f86a66fda58f4f07bfe2ca7acba7",
+  "prompts": {},
+  "logical_commit_id": "cc23fc5c367ab8c652813724b09343ffca609836",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
