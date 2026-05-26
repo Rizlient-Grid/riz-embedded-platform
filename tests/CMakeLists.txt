@@ -59,3 +59,11 @@ gtest_discover_tests(spsc_byte_buffer_test)
 gtest_discover_tests(timer_service_test)
 gtest_discover_tests(timer_awaiter_test)
 gtest_discover_tests(channel_test)
+
+add_executable(uart_test hal/uart_test.cpp)
+target_link_libraries(uart_test GTest::gtest_main riz)
+target_include_directories(uart_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+add_executable(uart_service_test io/uart_service_test.cpp)
+target_link_libraries(uart_service_test GTest::gtest_main riz)
+target_include_directories(uart_service_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
