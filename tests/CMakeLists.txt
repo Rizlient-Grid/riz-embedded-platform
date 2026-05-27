@@ -29,6 +29,10 @@ add_executable(ring_queue_test container/ring_queue_test.cpp)
 target_link_libraries(ring_queue_test GTest::gtest_main riz)
 target_include_directories(ring_queue_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
+add_executable(spsc_byte_buffer_test container/spsc_byte_buffer_test.cpp)
+target_link_libraries(spsc_byte_buffer_test GTest::gtest_main riz)
+target_include_directories(spsc_byte_buffer_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
 add_executable(timer_service_test timer/timer_service_test.cpp)
 target_link_libraries(timer_service_test GTest::gtest_main riz_test)
 target_include_directories(timer_service_test PRIVATE
@@ -51,6 +55,7 @@ gtest_discover_tests(schedulable_task_test)
 gtest_discover_tests(delta_queue_test)
 gtest_discover_tests(fifo_queue_test)
 gtest_discover_tests(ring_queue_test)
+gtest_discover_tests(spsc_byte_buffer_test)
 gtest_discover_tests(timer_service_test)
 gtest_discover_tests(timer_awaiter_test)
 gtest_discover_tests(channel_test)
