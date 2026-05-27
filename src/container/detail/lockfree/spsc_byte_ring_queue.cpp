@@ -5,23 +5,24 @@
 
 using namespace riz::container::detail::lockfree;
 
-bool spsc_byte_ring_queue::push(const std::byte* data, std::size_t len) noexcept {
+std::size_t spsc_byte_ring_queue::push(const std::byte* data, std::size_t len) noexcept {
     if (len == 0) {
-        return true;
+        return 0;
     }
     std::size_t tail = tail_.load(std::memory_order_relaxed);
     std::size_t head = head_.load(std::memory_order_acquire);
     std::size_t free = (head - tail - 1 + capacity_) % capacity_;
-    if (free < len) {
-        return false;
+    std::size_t to_write = std::min(free, len);
+    if (to_write == 0) {
+        return 0;
     }
-    std::size_t first = std::min(len, capacity_ - tail);
+    std::size_t first = std::min(to_write, capacity_ - tail);
     std::memcpy(buff_ + tail, data, first);
-    if (first < len) {
-        std::memcpy(buff_, data + first, len - first);
+    if (first < to_write) {
+        std::memcpy(buff_, data + first, to_write - first);
     }
-    tail_.store((tail + len) % capacity_, std::memory_order_release);
-    return true;
+    tail_.store((tail + to_write) % capacity_, std::memory_order_release);
+    return to_write;
 }
 
 std::size_t spsc_byte_ring_queue::pop_front(std::byte* data, std::size_t max_len) noexcept {

@@ -23,7 +23,7 @@ TEST_F(SpscByteBufferTest, InitialState) {
 
 TEST_F(SpscByteBufferTest, PushZeroLength) {
     const std::byte data[] = {std::byte {0x00}};
-    EXPECT_TRUE(buf_.push(data, 0));
+    EXPECT_EQ(buf_.push(data, 0), 0);
     EXPECT_EQ(buf_.size(), 0);
 }
 
@@ -36,7 +36,7 @@ TEST_F(SpscByteBufferTest, PopFromEmpty) {
 
 TEST_F(SpscByteBufferTest, PopZeroLength) {
     const std::byte data[] = {std::byte {0xAA}};
-    ASSERT_TRUE(buf_.push(data, 1));
+    ASSERT_EQ(buf_.push(data, 1), 1);
 
     std::byte out = std::byte {0x00};
     EXPECT_EQ(buf_.pop_front(&out, 0), 0);
@@ -45,7 +45,7 @@ TEST_F(SpscByteBufferTest, PopZeroLength) {
 
 TEST_F(SpscByteBufferTest, PushAndPopSingleByte) {
     const std::byte in = std::byte {0xAB};
-    ASSERT_TRUE(buf_.push(&in, 1));
+    ASSERT_EQ(buf_.push(&in, 1), 1);
     EXPECT_EQ(buf_.size(), 1);
 
     std::byte out = std::byte {0x00};
@@ -57,7 +57,7 @@ TEST_F(SpscByteBufferTest, PushAndPopSingleByte) {
 
 TEST_F(SpscByteBufferTest, PushAndPopMultipleBytes) {
     const std::byte data[] = {std::byte {0x01}, std::byte {0x02}, std::byte {0x03}};
-    ASSERT_TRUE(buf_.push(data, 3));
+    ASSERT_EQ(buf_.push(data, 3), 3);
     EXPECT_EQ(buf_.size(), 3);
 
     std::byte out[3] = {};
@@ -70,7 +70,7 @@ TEST_F(SpscByteBufferTest, PushAndPopMultipleBytes) {
 TEST_F(SpscByteBufferTest, PopLessThanAvailable) {
     const std::byte data[] = {
         std::byte {0x01}, std::byte {0x02}, std::byte {0x03}, std::byte {0x04}};
-    ASSERT_TRUE(buf_.push(data, 4));
+    ASSERT_EQ(buf_.push(data, 4), 4);
 
     std::byte out[2] = {};
     std::size_t read = buf_.pop_front(out, 2);
@@ -82,7 +82,7 @@ TEST_F(SpscByteBufferTest, PopLessThanAvailable) {
 
 TEST_F(SpscByteBufferTest, PopMoreThanAvailable) {
     const std::byte data[] = {std::byte {0x01}, std::byte {0x02}};
-    ASSERT_TRUE(buf_.push(data, 2));
+    ASSERT_EQ(buf_.push(data, 2), 2);
 
     std::byte out[8] = {};
     std::size_t read = buf_.pop_front(out, sizeof(out));
@@ -95,23 +95,25 @@ TEST_F(SpscByteBufferTest, PopMoreThanAvailable) {
 TEST_F(SpscByteBufferTest, PushFailsWhenFull) {
     static constexpr std::size_t kUsable = kCapacity - 1;
     std::vector<std::byte> fill(kUsable, std::byte {0xFF});
-    ASSERT_TRUE(buf_.push(fill.data(), fill.size()));
+    ASSERT_EQ(buf_.push(fill.data(), fill.size()), kUsable);
     EXPECT_EQ(buf_.size(), kUsable);
 
     const std::byte overflow = std::byte {0xEE};
-    EXPECT_FALSE(buf_.push(&overflow, 1));
+    EXPECT_EQ(buf_.push(&overflow, 1), 0);
     EXPECT_EQ(buf_.size(), kUsable);
 }
 
-TEST_F(SpscByteBufferTest, PushTooLargeFails) {
+TEST_F(SpscByteBufferTest, PushTooLargePartialWrite) {
+    static constexpr std::size_t kUsable = kCapacity - 1;
     std::vector<std::byte> large(kCapacity + 1, std::byte {0xAA});
-    EXPECT_FALSE(buf_.push(large.data(), large.size()));
-    EXPECT_EQ(buf_.size(), 0);
+    std::size_t written = buf_.push(large.data(), large.size());
+    EXPECT_EQ(written, kUsable);
+    EXPECT_EQ(buf_.size(), kUsable);
 }
 
 TEST_F(SpscByteBufferTest, WrapAroundWrite) {
     std::vector<std::byte> first(kCapacity - 2, std::byte {0x11});
-    ASSERT_TRUE(buf_.push(first.data(), first.size()));
+    ASSERT_EQ(buf_.push(first.data(), first.size()), first.size());
 
     std::vector<std::byte> discard(kCapacity - 2, std::byte {0x00});
     std::size_t read = buf_.pop_front(discard.data(), discard.size());
@@ -119,7 +121,7 @@ TEST_F(SpscByteBufferTest, WrapAroundWrite) {
     EXPECT_EQ(buf_.size(), 0);
 
     const std::byte wrap[] = {std::byte {0x22}, std::byte {0x33}, std::byte {0x44}};
-    ASSERT_TRUE(buf_.push(wrap, sizeof(wrap)));
+    ASSERT_EQ(buf_.push(wrap, sizeof(wrap)), sizeof(wrap));
     EXPECT_EQ(buf_.size(), 3);
 
     std::byte out[3] = {};
@@ -132,7 +134,7 @@ TEST_F(SpscByteBufferTest, FullWrapAroundCycle) {
     for (int round = 0; round < 10; ++round) {
         std::byte val = static_cast<std::byte>(round & 0xFF);
         std::vector<std::byte> in(kCapacity - 1, val);
-        ASSERT_TRUE(buf_.push(in.data(), in.size()));
+        ASSERT_EQ(buf_.push(in.data(), in.size()), in.size());
         EXPECT_EQ(buf_.size(), kCapacity - 1);
 
         std::vector<std::byte> out(kCapacity - 1, std::byte {0x00});
@@ -148,7 +150,7 @@ TEST_F(SpscByteBufferTest, FullWrapAroundCycle) {
 TEST_F(SpscByteBufferTest, SequentialPushPopInterleaved) {
     for (std::size_t i = 0; i < 100; ++i) {
         std::byte b = static_cast<std::byte>(i & 0xFF);
-        ASSERT_TRUE(buf_.push(&b, 1));
+        ASSERT_EQ(buf_.push(&b, 1), 1);
 
         std::byte out = std::byte {0x00};
         std::size_t read = buf_.pop_front(&out, 1);
@@ -163,7 +165,7 @@ TEST_F(SpscByteBufferTest, SmallCapacityBuffer) {
     EXPECT_EQ(small.capacity(), 2);
 
     const std::byte a = std::byte {0x01};
-    EXPECT_TRUE(small.push(&a, 1));
+    EXPECT_EQ(small.push(&a, 1), 1);
     EXPECT_EQ(small.size(), 1);
 
     std::byte out = std::byte {0x00};
@@ -181,7 +183,7 @@ TEST_F(SpscByteBufferTest, ConcurrentSpsc) {
         std::size_t produced = 0;
         while (produced < kTotalBytes) {
             std::byte val = static_cast<std::byte>(produced & 0xFF);
-            if (ring.push(&val, 1)) {
+            if (ring.push(&val, 1) > 0) {
                 ++produced;
             }
         }
@@ -205,6 +207,199 @@ TEST_F(SpscByteBufferTest, ConcurrentSpsc) {
     EXPECT_EQ(ring.size(), 0);
 }
 
+TEST_F(SpscByteBufferTest, PartialWriteWhenPartiallyFull) {
+    static constexpr std::size_t kUsable = kCapacity - 1;
+    const std::byte first_data[] = {std::byte {0x01}, std::byte {0x02}, std::byte {0x03}};
+    ASSERT_EQ(buf_.push(first_data, 3), 3);
+    EXPECT_EQ(buf_.size(), 3);
+
+    std::vector<std::byte> large(kUsable + 10, std::byte {0xAA});
+    std::size_t written = buf_.push(large.data(), large.size());
+    EXPECT_EQ(written, kUsable - 3);
+    EXPECT_EQ(buf_.size(), kUsable);
+
+    std::byte out[kUsable];
+    std::size_t read = buf_.pop_front(out, kUsable);
+    ASSERT_EQ(read, kUsable);
+    EXPECT_EQ(out[0], std::byte {0x01});
+    EXPECT_EQ(out[1], std::byte {0x02});
+    EXPECT_EQ(out[2], std::byte {0x03});
+    for (std::size_t i = 3; i < kUsable; ++i) {
+        EXPECT_EQ(out[i], std::byte {0xAA}) << "i=" << i;
+    }
+}
+
+TEST_F(SpscByteBufferTest, PartialWriteThenConsumeThenPushRemaining) {
+    static constexpr std::size_t kUsable = kCapacity - 1;
+    std::vector<std::byte> data(kUsable + 5, std::byte {0x42});
+    std::size_t written1 = buf_.push(data.data(), data.size());
+    EXPECT_EQ(written1, kUsable);
+    EXPECT_EQ(buf_.size(), kUsable);
+
+    std::byte discard[kUsable];
+    std::size_t read = buf_.pop_front(discard, kUsable);
+    ASSERT_EQ(read, kUsable);
+    for (std::size_t i = 0; i < kUsable; ++i) {
+        EXPECT_EQ(discard[i], std::byte {0x42});
+    }
+    EXPECT_EQ(buf_.size(), 0);
+
+    std::size_t written2 = buf_.push(data.data() + written1, data.size() - written1);
+    EXPECT_EQ(written2, 5);
+    EXPECT_EQ(buf_.size(), 5);
+
+    std::byte remain[5] = {};
+    read = buf_.pop_front(remain, 5);
+    ASSERT_EQ(read, 5);
+    for (std::size_t i = 0; i < 5; ++i) {
+        EXPECT_EQ(remain[i], std::byte {0x42});
+    }
+}
+
+TEST_F(SpscByteBufferTest, PushExactRemainingSpace) {
+    ASSERT_EQ(buf_.push(std::vector<std::byte>(5, std::byte {0x11}).data(), 5), 5);
+    EXPECT_EQ(buf_.size(), 5);
+
+    static constexpr std::size_t kUsable = kCapacity - 1;
+    std::vector<std::byte> rest(kUsable - 5, std::byte {0x22});
+    EXPECT_EQ(buf_.push(rest.data(), rest.size()), rest.size());
+    EXPECT_EQ(buf_.size(), kUsable);
+
+    const std::byte overflow = std::byte {0x33};
+    EXPECT_EQ(buf_.push(&overflow, 1), 0);
+}
+
+TEST_F(SpscByteBufferTest, MultiplePartialWritesFillBuffer) {
+    static constexpr std::size_t kUsable = kCapacity - 1;
+    const std::byte pattern[] = {std::byte {0xA0}, std::byte {0xA1}, std::byte {0xA2},
+        std::byte {0xA3}, std::byte {0xA4}, std::byte {0xA5}, std::byte {0xA6},
+        std::byte {0xA7}, std::byte {0xA8}, std::byte {0xA9}, std::byte {0xAA},
+        std::byte {0xAB}, std::byte {0xAC}, std::byte {0xAD}, std::byte {0xAE},
+        std::byte {0xAF}, std::byte {0xB0}, std::byte {0xB1}, std::byte {0xB2},
+        std::byte {0xB3}};
+
+    std::size_t total_written = 0;
+    while (total_written < sizeof(pattern)) {
+        std::size_t w = buf_.push(pattern + total_written, sizeof(pattern) - total_written);
+        ASSERT_GT(w, 0u);
+        total_written += w;
+        if (buf_.size() == kUsable) {
+            break;
+        }
+    }
+    EXPECT_EQ(total_written, kUsable);
+    EXPECT_EQ(buf_.size(), kUsable);
+
+    std::byte out[kUsable] = {};
+    std::size_t read = buf_.pop_front(out, kUsable);
+    ASSERT_EQ(read, kUsable);
+    for (std::size_t i = 0; i < kUsable; ++i) {
+        EXPECT_EQ(out[i], pattern[i]) << "i=" << i;
+    }
+}
+
+TEST_F(SpscByteBufferTest, PartialWriteWrapAround) {
+    std::vector<std::byte> first(kCapacity - 3, std::byte {0x11});
+    ASSERT_EQ(buf_.push(first.data(), first.size()), first.size());
+
+    std::vector<std::byte> discard(kCapacity - 3, std::byte {0x00});
+    ASSERT_EQ(buf_.pop_front(discard.data(), discard.size()), first.size());
+
+    std::vector<std::byte> large(kCapacity + 2, std::byte {0x22});
+    std::size_t written = buf_.push(large.data(), large.size());
+    EXPECT_EQ(written, kCapacity - 1);
+
+    std::vector<std::byte> out(kCapacity - 1, std::byte {0x00});
+    std::size_t read = buf_.pop_front(out.data(), out.size());
+    ASSERT_EQ(read, kCapacity - 1);
+    for (std::size_t i = 0; i < read; ++i) {
+        EXPECT_EQ(out[i], std::byte {0x22}) << "i=" << i;
+    }
+}
+
+TEST_F(SpscByteBufferTest, PartialWriteDataLargerThanCapacity) {
+    spsc_byte_buffer<8> small;
+    static constexpr std::size_t kUsable = 7;
+
+    std::vector<std::byte> huge(100, std::byte {0xCC});
+    std::size_t written = small.push(huge.data(), huge.size());
+    EXPECT_EQ(written, kUsable);
+    EXPECT_EQ(small.size(), kUsable);
+
+    std::byte out[kUsable] = {};
+    std::size_t read = small.pop_front(out, kUsable);
+    ASSERT_EQ(read, kUsable);
+    for (std::size_t i = 0; i < kUsable; ++i) {
+        EXPECT_EQ(out[i], std::byte {0xCC});
+    }
+}
+
+TEST_F(SpscByteBufferTest, PushReturnZeroOnFullBuffer) {
+    static constexpr std::size_t kUsable = kCapacity - 1;
+    std::vector<std::byte> fill(kUsable, std::byte {0xFF});
+    ASSERT_EQ(buf_.push(fill.data(), fill.size()), kUsable);
+
+    for (int i = 0; i < 10; ++i) {
+        const std::byte dummy = std::byte {0x00};
+        EXPECT_EQ(buf_.push(&dummy, 1), 0);
+    }
+    EXPECT_EQ(buf_.size(), kUsable);
+}
+
+TEST_F(SpscByteBufferTest, PartialWriteLoopComplete) {
+    static constexpr std::size_t kTotalLen = 200;
+    std::vector<std::byte> data(kTotalLen);
+    for (std::size_t i = 0; i < kTotalLen; ++i) {
+        data[i] = static_cast<std::byte>(i & 0xFF);
+    }
+
+    std::size_t offset = 0;
+    std::vector<std::byte> received;
+    received.reserve(kTotalLen);
+
+    while (offset < kTotalLen || received.size() < kTotalLen) {
+        if (offset < kTotalLen) {
+            offset += buf_.push(data.data() + offset, kTotalLen - offset);
+        }
+        std::byte tmp[kCapacity];
+        std::size_t r = buf_.pop_front(tmp, sizeof(tmp));
+        for (std::size_t i = 0; i < r; ++i) {
+            received.push_back(tmp[i]);
+        }
+    }
+
+    ASSERT_EQ(received.size(), kTotalLen);
+    for (std::size_t i = 0; i < kTotalLen; ++i) {
+        EXPECT_EQ(received[i], static_cast<std::byte>(i & 0xFF)) << "i=" << i;
+    }
+}
+
+TEST_F(SpscByteBufferTest, PushExactlyFullThenPopExactly) {
+    static constexpr std::size_t kUsable = kCapacity - 1;
+    std::vector<std::byte> data(kUsable);
+    for (std::size_t i = 0; i < kUsable; ++i) {
+        data[i] = static_cast<std::byte>(i);
+    }
+    ASSERT_EQ(buf_.push(data.data(), kUsable), kUsable);
+    EXPECT_EQ(buf_.size(), kUsable);
+
+    std::vector<std::byte> out(kUsable, std::byte {0x00});
+    ASSERT_EQ(buf_.pop_front(out.data(), kUsable), kUsable);
+    for (std::size_t i = 0; i < kUsable; ++i) {
+        EXPECT_EQ(out[i], static_cast<std::byte>(i)) << "i=" << i;
+    }
+    EXPECT_EQ(buf_.size(), 0);
+
+    std::vector<std::byte> data2(kUsable, std::byte {0xDD});
+    ASSERT_EQ(buf_.push(data2.data(), kUsable), kUsable);
+
+    std::vector<std::byte> out2(kUsable, std::byte {0x00});
+    ASSERT_EQ(buf_.pop_front(out2.data(), kUsable), kUsable);
+    for (std::size_t i = 0; i < kUsable; ++i) {
+        EXPECT_EQ(out2[i], std::byte {0xDD});
+    }
+}
+
 TEST_F(SpscByteBufferTest, ConcurrentSpscBatched) {
     static constexpr std::size_t kBufCap = 8192;
     static constexpr std::size_t kBatchSize = 64;
@@ -217,7 +412,9 @@ TEST_F(SpscByteBufferTest, ConcurrentSpscBatched) {
             for (std::size_t i = 0; i < kBatchSize; ++i) {
                 batch[i] = static_cast<std::byte>((b * kBatchSize + i) & 0xFF);
             }
-            while (!ring.push(batch.data(), kBatchSize)) {
+            std::size_t offset = 0;
+            while (offset < kBatchSize) {
+                offset += ring.push(batch.data() + offset, kBatchSize - offset);
             }
         }
     });
@@ -225,15 +422,16 @@ TEST_F(SpscByteBufferTest, ConcurrentSpscBatched) {
     std::thread consumer([&] {
         std::array<std::byte, kBatchSize> batch {};
         for (std::size_t b = 0; b < kNumBatches;) {
-            std::size_t read = ring.pop_front(batch.data(), kBatchSize);
-            if (read == kBatchSize) {
-                for (std::size_t i = 0; i < kBatchSize; ++i) {
-                    auto expected = static_cast<std::byte>((b * kBatchSize + i) & 0xFF);
-                    EXPECT_EQ(batch[i], expected)
-                        << "batch=" << b << " i=" << i;
-                }
-                ++b;
+            std::size_t offset = 0;
+            while (offset < kBatchSize) {
+                offset += ring.pop_front(batch.data() + offset, kBatchSize - offset);
             }
+            for (std::size_t i = 0; i < kBatchSize; ++i) {
+                auto expected = static_cast<std::byte>((b * kBatchSize + i) & 0xFF);
+                EXPECT_EQ(batch[i], expected)
+                    << "batch=" << b << " i=" << i;
+            }
+            ++b;
         }
     });
 
