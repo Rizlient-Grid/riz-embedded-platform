@@ -1,0 +1,19 @@
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 4,24,39
+src/io/uart_service.cpp
+  h_b4153c87f08e2b 7-14
+include/riz/coro/awaiter/uart_transmit_awaiter.h
+  h_b4153c87f08e2b 1-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "1f503fb93c1417cc01d9c25130fbf8cc458fed79",
+  "prompts": {},
+  "logical_commit_id": "1f503fb93c1417cc01d9c25130fbf8cc458fed79",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
