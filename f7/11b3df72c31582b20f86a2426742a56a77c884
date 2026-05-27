@@ -1,0 +1,19 @@
+src/port/stm32/uart.cpp
+  h_b4153c87f08e2b 22-29,42,44-55,59,61-71,75-78,81,83-85,88,91-94
+include/riz/hal/uart.h
+  h_b4153c87f08e2b 12-14,16-18,20-22,26-33,37-41
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 8,18-20,26-27,36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "f711b3df72c31582b20f86a2426742a56a77c884",
+  "prompts": {},
+  "logical_commit_id": "f711b3df72c31582b20f86a2426742a56a77c884",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
