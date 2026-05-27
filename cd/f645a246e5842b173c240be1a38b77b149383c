@@ -1,0 +1,22 @@
+tests/container/spsc_byte_buffer_test.cpp
+  h_b4153c87f08e2b 1-243
+include/riz/container/lockfree/spsc_byte_buffer.hpp
+  h_b4153c87f08e2b 3-4,10-32
+include/riz/container/detail/lockfree/spsc_byte_ring_queue.h
+  h_b4153c87f08e2b 1-26,29
+tests/CMakeLists.txt
+  h_b4153c87f08e2b 32-35,58
+src/container/detail/lockfree/spsc_byte_ring_queue.cpp
+  h_b4153c87f08e2b 1-36,40,42-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "cdf645a246e5842b173c240be1a38b77b149383c",
+  "prompts": {},
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+include/riz/hal/uart.h
+  h_b4153c87f08e2b 1-8,10-11,15-16,20,24-25,27-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "d4e14bd81928c5c1672af33e00f9aa0c09384bde",
+  "prompts": {},
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
