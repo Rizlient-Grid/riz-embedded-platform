@@ -13,7 +13,7 @@ public:
         : capacity_ {Capacity}
         , buff_ {storage} {}
 
-    bool push(const std::byte* data, std::size_t len) noexcept;
+    std::size_t push(const std::byte* data, std::size_t len) noexcept;
     std::size_t pop_front(std::byte* data, std::size_t max_len) noexcept;
     std::size_t size() const noexcept;
     

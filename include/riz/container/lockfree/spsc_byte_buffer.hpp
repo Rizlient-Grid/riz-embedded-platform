@@ -17,7 +17,7 @@ public:
         return Capacity;
     }
 
-    bool push(const std::byte* data, std::size_t len) noexcept {
+    std::size_t push(const std::byte* data, std::size_t len) noexcept {
         return detail::lockfree::spsc_byte_ring_queue::push(data, len);
     }
 
