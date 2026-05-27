@@ -6,7 +6,7 @@
 #include <riz/coro/awaiter/channel_receive_awaiter.hpp>
 #include <riz/coro/awaiter/channel_send_awaiter.hpp>
 #include <riz/coro/channel/errcode.hpp>
-#include <riz/coro/execution/schedulable_node.h>
+#include <riz/coro/channel/channel_node.h>
 
 #include <cstddef>
 #include <type_traits>
@@ -30,9 +30,8 @@ public:
         if (closed_) {
             return errcode::closed;
         }
-        if (auto n = static_cast<receiver_node*>(pending_receivers_.pop_front())) {
-            *n->value = value;
-            n->sched_node->executor->post(*n->sched_node);
+        if (auto n = static_cast<channel_node*>(pending_receivers_.pop_front())) {
+            n->on_resume(n, const_cast<T*>(&value), errcode::success);
             return errcode::success;
         }
         if constexpr (Capacity > 0) {
@@ -52,9 +51,8 @@ public:
     [[nodiscard]] errcode try_receive(T& value) noexcept {
         if constexpr (Capacity > 0) {
             if (buffer_.pop_front(value)) {
-                if (auto n = static_cast<sender_node*>(pending_senders_.pop_front())) {
-                    buffer_.push(*n->value);
-                    n->sched_node->executor->post(*n->sched_node);
+                if (auto n = static_cast<channel_node*>(pending_senders_.pop_front())) {
+                    n->on_resume(n, this, errcode::success);
                 }
                 return errcode::success;
             }
@@ -62,9 +60,8 @@ public:
         if (closed_) {
             return errcode::closed;
         }
-        if (auto n = static_cast<sender_node*>(pending_senders_.pop_front())) {
-            value = *n->value;
-            n->sched_node->executor->post(*n->sched_node);
+        if (auto n = static_cast<channel_node*>(pending_senders_.pop_front())) {
+            n->on_resume(n, &value, errcode::success);
             return errcode::success;
         }
         return errcode::empty;
@@ -72,13 +69,11 @@ public:
 
     void close() noexcept {
         closed_ = true;
-        while (auto n = static_cast<sender_node*>(pending_senders_.pop_front())) {
-            n->status = errcode::canceled;
-            n->sched_node->executor->post(*n->sched_node);
+        while (auto n = static_cast<channel_node*>(pending_senders_.pop_front())) {
+            n->on_resume(n, nullptr, errcode::canceled);
         }
-        while (auto n = static_cast<receiver_node*>(pending_receivers_.pop_front())) {
-            n->status = errcode::canceled;
-            n->sched_node->executor->post(*n->sched_node);
+        while (auto n = static_cast<channel_node*>(pending_receivers_.pop_front())) {
+            n->on_resume(n, nullptr, errcode::canceled);
         }
     }
 
@@ -87,24 +82,11 @@ public:
     }
 
 private:
-    using fifo_queue = container::intrusive::fifo_queue;
-    struct sender_node : fifo_queue::node {
-        execution::schedulable_node* sched_node {nullptr};
-        const T* value {nullptr};
-        errcode status {errcode::success};
-    };
-    struct receiver_node : fifo_queue::node {
-        execution::schedulable_node* sched_node {nullptr};
-        T* value {nullptr};
-        errcode status {errcode::success};
-    };
-
-private:
-    void push_pending_sender(sender_node& entry) noexcept {
+    void push_pending_sender(channel_node& entry) noexcept {
         pending_senders_.push(entry);
     }
 
-    void push_pending_receiver(receiver_node& entry) noexcept {
+    void push_pending_receiver(channel_node& entry) noexcept {
         pending_receivers_.push(entry);
     }
 
