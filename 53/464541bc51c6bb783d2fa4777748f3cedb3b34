@@ -1,0 +1,23 @@
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 1-34
+include/riz/coro/awaiter/uart_receive_awaiter.h
+  h_b4153c87f08e2b 1-46
+include/riz/hal/uart.h
+  h_b4153c87f08e2b 5,12,14,18-19,28-29
+src/port/stm32/uart.cpp
+  h_b4153c87f08e2b 1-68
+include/riz/io/errcode.h
+  h_b4153c87f08e2b 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "53464541bc51c6bb783d2fa4777748f3cedb3b34",
+  "prompts": {},
+  "logical_commit_id": "53464541bc51c6bb783d2fa4777748f3cedb3b34",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
