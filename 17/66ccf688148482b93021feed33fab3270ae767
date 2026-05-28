@@ -1,0 +1,19 @@
+include/riz/coro/awaiter/uart_transmit_awaiter.h
+  h_b4153c87f08e2b 1-68
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 4-5,8,13-16,25,27-28,33,38-40,43
+include/riz/coro/channel/channel_node.h
+  h_b4153c87f08e2b 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "1766ccf688148482b93021feed33fab3270ae767",
+  "prompts": {},
+  "logical_commit_id": "1766ccf688148482b93021feed33fab3270ae767",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
