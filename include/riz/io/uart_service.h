@@ -40,9 +40,14 @@ private:
     void on_rx_error(hal::errcode err) noexcept override;
 
     static void on_tx_timeout(timer::timer_node* tn) noexcept;
+    static void on_rx_timeout(timer::timer_node* tn) noexcept;
 
 private:
     struct tx_timeout_node : timer::timer_node {
+        uart_service* self;
+    };
+
+    struct rx_timeout_node : timer::timer_node {
         uart_service* self;
     };
 
@@ -55,6 +60,7 @@ private:
     coro::awaiter::uart_transmit_awaiter* active_sender_awaiter_ {nullptr};
     coro::awaiter::uart_receive_awaiter* active_receiver_awaiter_ {nullptr};
     tx_timeout_node tx_timer_;
+    rx_timeout_node rx_timer_;
     container::lockfree::spsc_byte_buffer<128> rx_ring_buffer_;
 };
 
