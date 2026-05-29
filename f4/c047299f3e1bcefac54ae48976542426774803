@@ -1,0 +1,17 @@
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 43,50,63
+src/io/uart_service.cpp
+  h_b4153c87f08e2b 79-82,88,97,119-124
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "f4c047299f3e1bcefac54ae48976542426774803",
+  "prompts": {},
+  "logical_commit_id": "dd79aa70643ee7fa288d88d31ef71ca4d1b27dbb",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
