@@ -4,6 +4,8 @@ add_library(riz_core OBJECT
     container/intrusive/delta_queue.cpp
     container/intrusive/fifo_queue.cpp
     coro/execution/scheduler.cpp
+    coro/sleep.cpp
+    io/uart_service.cpp
     timer/timer_service.cpp
 )
 

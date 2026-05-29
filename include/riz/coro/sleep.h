@@ -7,9 +7,7 @@
 
 namespace riz::coro {
 
-awaiter::timer_awaiter sleep(std::uint32_t ticks) noexcept {
-    return awaiter::timer_awaiter {ticks, true};
-}
+awaiter::timer_awaiter sleep(std::uint32_t ticks) noexcept;
 
 template<typename Rep, typename Period>
 awaiter::timer_awaiter sleep(std::chrono::duration<Rep, Period> dur) noexcept {
