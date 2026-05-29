@@ -1,0 +1,38 @@
+include/riz/coro/channel/channel_node.h
+  h_b4153c87f08e2b 9
+include/riz/concepts/bitmask_enum.h
+  h_b4153c87f08e2b 1-30
+include/riz/hal/errcode.h
+  h_b4153c87f08e2b 1-21
+src/CMakeLists.txt
+  h_b4153c87f08e2b 7
+include/riz/hal/uart.h
+  h_b4153c87f08e2b 1-11,15-17,20,22,24-28,30,32-35,39-40,42-43
+src/coro/sleep.cpp
+  h_b4153c87f08e2b 1-5
+include/riz/hal/uart_observer.h
+  h_b4153c87f08e2b 1-21
+src/port/stm32/uart.cpp
+  h_b4153c87f08e2b 1-43,45-47,50-51,53,55-62,68,71-75,79-80,82-83,85-87,89-102
+include/riz/coro/awaiter/uart_transmit_awaiter.h
+  h_b4153c87f08e2b 1-68
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 1-19,21-36,38-46,52,54,56
+include/riz/io/errcode.h
+  h_b4153c87f08e2b 1-15
+src/io/uart_service.cpp
+  h_b4153c87f08e2b 1-51,54,57-66,70-78,80-93,95,122
+include/riz/coro/awaiter/uart_receive_awaiter.h
+  h_b4153c87f08e2b 1-55,58,60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "b699b9446b0012a190848cc062ac1b80624b267a",
+  "prompts": {},
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
