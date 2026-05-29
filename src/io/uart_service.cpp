@@ -76,11 +76,16 @@ void riz::io::uart_service::run() noexcept {
             if (try_fill_receiver(*r)) {
                 r->on_resume(io::errcode::success);
                 active_receiver_awaiter_ = nullptr;
+            } else if (r->timeout_ms_ > 0) {
+                rx_timer_.self = this;
+                rx_timer_.on_expire = &on_rx_timeout;
+                timer::timer_service::instance().submit_ms(r->timeout_ms_, rx_timer_);
             }
         }
     }
     if (active_receiver_awaiter_ != nullptr) {
         if (try_fill_receiver(*active_receiver_awaiter_)) {
+            timer::timer_service::instance().cancel(rx_timer_);
             active_receiver_awaiter_->on_resume(io::errcode::success);
             active_receiver_awaiter_ = nullptr;
         }
@@ -89,6 +94,7 @@ void riz::io::uart_service::run() noexcept {
     hal::errcode status = hw_status_.load(std::memory_order_acquire);
     if (status != hal::errcode::ok) {
         if (active_receiver_awaiter_ != nullptr) {
+            timer::timer_service::instance().cancel(rx_timer_);
             active_receiver_awaiter_->on_resume(io::errcode::hw_error);
             active_receiver_awaiter_ = nullptr;
         }
@@ -108,6 +114,14 @@ void riz::io::uart_service::on_tx_timeout(timer::timer_node* tn) noexcept {
     self.tx_ready_.store(true, std::memory_order_release);
     self.active_sender_awaiter_->on_resume(io::errcode::timeout);
     self.active_sender_awaiter_ = nullptr;
+}
+
+void riz::io::uart_service::on_rx_timeout(timer::timer_node* tn) noexcept {
+    auto* node = static_cast<rx_timeout_node*>(tn);
+    auto& self = *node->self;
+    if (!self.active_receiver_awaiter_) return;
+    self.active_receiver_awaiter_->on_resume(io::errcode::timeout);
+    self.active_receiver_awaiter_ = nullptr;
 }
 
 void riz::io::uart_service::on_rx_complete(const std::byte* data, std::size_t len) noexcept {
