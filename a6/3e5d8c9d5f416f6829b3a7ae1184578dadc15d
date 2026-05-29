@@ -1,0 +1,33 @@
+src/CMakeLists.txt
+  h_b4153c87f08e2b 7
+include/riz/hal/uart.h
+  h_b4153c87f08e2b 4,27,32,39
+src/io/uart_service.cpp
+  h_b4153c87f08e2b 45-46,50-51,54,57-58
+include/riz/coro/awaiter/uart_transmit_awaiter.h
+  h_b4153c87f08e2b 7
+include/riz/hal/uart_observer.h
+  h_b4153c87f08e2b 1-21
+include/riz/hal/errcode.h
+  h_b4153c87f08e2b 1-21
+include/riz/concepts/bitmask_enum.h
+  h_b4153c87f08e2b 1-30
+src/port/stm32/uart.cpp
+  h_b4153c87f08e2b 1-2,8,25-26,55,71,75,79,83,87,90-102
+src/coro/sleep.cpp
+  h_b4153c87f08e2b 1-5
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 18,22,33-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "a63e5d8c9d5f416f6829b3a7ae1184578dadc15d",
+  "prompts": {},
+  "logical_commit_id": "a63e5d8c9d5f416f6829b3a7ae1184578dadc15d",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
