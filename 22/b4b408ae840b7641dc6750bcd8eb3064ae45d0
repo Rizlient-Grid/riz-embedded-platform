@@ -1,0 +1,16 @@
+include/riz/coro/awaiter/uart_transmit_awaiter.h
+  h_b4153c87f08e2b 7
+include/riz/coro/awaiter/uart_receive_awaiter.h
+  h_b4153c87f08e2b 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.12",
+  "base_commit_sha": "22b4b408ae840b7641dc6750bcd8eb3064ae45d0",
+  "prompts": {},
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
