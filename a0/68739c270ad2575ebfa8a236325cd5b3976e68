@@ -1,0 +1,51 @@
+src/coro/awaiter/basic_channel_write_awaiter.cpp
+  h_b4153c87f08e2b 1-29
+src/coro/awaiter/basic_channel_read_awaiter.cpp
+  h_b4153c87f08e2b 1-29
+src/CMakeLists.txt
+  h_b4153c87f08e2b 2,6-8
+src/container/raw_ring_queue.cpp
+  h_b4153c87f08e2b 1,8,10,15,23,25-26,31,42,54
+include/riz/coro/awaiter/channel_write_awaiter.hpp
+  h_b4153c87f08e2b 1-22
+include/riz/coro/awaiter/basic_channel_write_awaiter.h
+  h_b4153c87f08e2b 3,5-7,11,16,18-19,22-24,27-28,31
+include/riz/coro/channel/channel.hpp
+  h_b4153c87f08e2b 3,5-7,14-15,17,19-20,22-24,26-27,30-31,35,38-39
+include/riz/coro/transport/write_acceptor.h
+  h_b4153c87f08e2b 1-25
+src/coro/channel/basic_channel.cpp
+  h_b4153c87f08e2b 1-56
+include/riz/coro/channel/basic_channel.h
+  h_b4153c87f08e2b 1-50
+include/riz/coro/awaiter/schedulable_awaiter_node.h
+  h_b4153c87f08e2b 1-23
+include/riz/coro/awaiter/basic_channel_read_awaiter.h
+  h_b4153c87f08e2b 3,5-7,11,16,18-19,22-24,27-28,31
+include/riz/errcode.h
+  h_b4153c87f08e2b 5,7,15
+include/riz/coro/transport/read_acceptor.h
+  h_b4153c87f08e2b 1-25
+tests/coro/channel_test.cpp
+  h_b4153c87f08e2b 7,15,33-34,49,53-54,61,64,67,71-72,80,86-87,94-95,98,120,131,144,155,162,210-211,214,225,280,306,336,358,375-376,378,396,415-416,420,425-426,430,446-447,451
+include/riz/coro/promise/schedulable_task_promise_base.h
+  h_b4153c87f08e2b 1-11
+include/riz/container/ring_queue.hpp
+  h_b4153c87f08e2b 3,12,17,24,28,32,36,40,44,48
+include/riz/coro/promise/schedulable_task_promise.hpp
+  h_b4153c87f08e2b 3-4,28-29,37-38,52-53,58-59
+include/riz/container/raw_ring_queue.h
+  h_b4153c87f08e2b 7,9,11,13,15,17-18,33-36,52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a068739c270ad2575ebfa8a236325cd5b3976e68",
+  "prompts": {},
+  "logical_commit_id": "a068739c270ad2575ebfa8a236325cd5b3976e68",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
