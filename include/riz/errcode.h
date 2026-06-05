@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-namespace riz::coro::channel {
+namespace riz {
 
-enum class errcode : std::int8_t {
+enum errcode : std::int8_t {
     success = 0,
     closed = -1,
     full = -2,
@@ -12,4 +12,4 @@ enum class errcode : std::int8_t {
     canceled = -4
 };
 
-} // namespace riz::coro::channel
+} // namespace riz

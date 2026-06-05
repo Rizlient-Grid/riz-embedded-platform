@@ -1,8 +1,11 @@
 add_library(riz_core OBJECT
-    container/detail/ring_queue.cpp
+    container/raw_ring_queue.cpp
     container/detail/lockfree/spsc_byte_ring_queue.cpp
     container/intrusive/delta_queue.cpp
     container/intrusive/fifo_queue.cpp
+    coro/channel/basic_channel.cpp
+    coro/awaiter/basic_channel_read_awaiter.cpp
+    coro/awaiter/basic_channel_write_awaiter.cpp
     coro/execution/scheduler.cpp
     coro/sleep.cpp
     io/uart_service.cpp
