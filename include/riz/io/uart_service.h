@@ -1,10 +1,11 @@
 #pragma once
 
 #include <riz/constraints.h>
-#include <riz/container/intrusive/fifo_queue.h>
-#include <riz/container/lockfree/spsc_byte_buffer.hpp>
+#include <riz/container/lockfree/spsc_raw_byte_ring_buffer.h>
+#include <riz/coro/transport/read_acceptor.h>
+#include <riz/coro/transport/write_acceptor.h>
+#include <riz/errcode.h>
 #include <riz/hal/uart.h>
-#include <riz/io/errcode.h>
 #include <riz/timer/timer_node.h>
 
 #include <atomic>
@@ -18,26 +19,40 @@ class uart_receive_awaiter;
 
 namespace riz::io {
 
-class uart_service : immovable, public hal::uart_observer {
+class uart_service : public immovable,
+                     public coro::transport::read_acceptor,
+                     public coro::transport::write_acceptor,
+                     public hal::uart_observer {
 public:
-    uart_service(hal::uart& dev)
-        : dev_(dev) {
+	template<std::size_t N>
+    uart_service(hal::uart& dev, std::byte (&storage)[N])
+        : dev_(dev)
+	    , rx_ring_buffer_ {storage} {
         dev_.set_observer(this);
     }
 
-    coro::awaiter::uart_receive_awaiter receive(void* data, std::size_t len, std::uint32_t timeout_ms = 0) noexcept;
-    coro::awaiter::uart_transmit_awaiter transmit(const void* data, std::size_t len, std::uint32_t timeout_ms = 0) noexcept;
+    coro::awaiter::uart_receive_awaiter receive(
+        void* data, std::size_t len, std::uint32_t timeout_ms = 0) noexcept;
+    coro::awaiter::uart_transmit_awaiter transmit(
+        const void* data, std::size_t len, std::uint32_t timeout_ms = 0) noexcept;
 
     bool try_fill_receiver(coro::awaiter::uart_receive_awaiter& receiver) noexcept;
-    void push_pending_sender(container::intrusive::fifo_queue::node& node) noexcept;
-    void push_pending_receiver(container::intrusive::fifo_queue::node& node) noexcept;
+    std::size_t try_drain_transmitter(coro::awaiter::uart_transmit_awaiter& transmitter,
+        const std::byte*& data, std::size_t chunk_size) noexcept;
     void run() noexcept;
 
 private:
+    void complete_active_read(errcode status) noexcept;
+    void complete_active_write(errcode status) noexcept;
+
+    void process_write() noexcept;
+    void process_read() noexcept;
+    void process_error() noexcept;
+
     void on_tx_complete() noexcept override;
     void on_rx_complete(const std::byte* data, std::size_t len) noexcept override;
     void on_rx_idle(const std::byte* data, std::size_t len) noexcept override;
-    void on_rx_error(hal::errcode err) noexcept override;
+    void on_rx_error(errcode err) noexcept override;
 
     static void on_tx_timeout(timer::timer_node* tn) noexcept;
     static void on_rx_timeout(timer::timer_node* tn) noexcept;
@@ -53,15 +68,13 @@ private:
 
 private:
     hal::uart& dev_;
-    std::atomic<bool> tx_ready_ {true};
-    std::atomic<hal::errcode> hw_status_ {hal::errcode::ok};
-    container::intrusive::fifo_queue pending_senders_;
-    container::intrusive::fifo_queue pending_receivers_;
-    coro::awaiter::uart_transmit_awaiter* active_sender_awaiter_ {nullptr};
-    coro::awaiter::uart_receive_awaiter* active_receiver_awaiter_ {nullptr};
+    std::atomic<bool> write_ready_ {true};
+    std::atomic<errcode> hw_status_ {errcode::success};
+    coro::awaiter::uart_transmit_awaiter* active_write_awaiter_ {nullptr};
+    coro::awaiter::uart_receive_awaiter* active_read_awaiter_ {nullptr};
+    container::lockfree::spsc_raw_byte_ring_buffer rx_ring_buffer_;
     tx_timeout_node tx_timer_;
     rx_timeout_node rx_timer_;
-    container::lockfree::spsc_byte_buffer<128> rx_ring_buffer_;
 };
 
-}
+} // namespace riz::io

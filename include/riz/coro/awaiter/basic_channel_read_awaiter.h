@@ -2,7 +2,6 @@
 
 #include "schedulable_awaiter_node.h"
 
-#include <riz/coro/promise/schedulable_task_promise_base.h>
 #include <riz/errcode.h>
 
 #include <coroutine>

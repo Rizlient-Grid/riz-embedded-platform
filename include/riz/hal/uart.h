@@ -10,7 +10,11 @@ namespace riz::hal {
 
 class uart : public immovable {
 public:
-    enum class transfer_mode : std::uint8_t { dma, it };
+    enum class transfer_mode : std::uint8_t
+    {
+        dma,
+        it
+    };
 
 public:
     template<typename T, std::size_t N>
@@ -41,4 +45,4 @@ private:
     uart_observer* observer_ {nullptr};
 };
 
-}
+} // namespace riz::hal

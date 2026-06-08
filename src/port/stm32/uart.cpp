@@ -1,4 +1,4 @@
-#include "riz/hal/errcode.h"
+#include "riz/errcode.h"
 #include "riz/hal/uart_observer.h"
 #include <riz/hal/uart.h>
 
@@ -10,15 +10,24 @@
 using namespace riz::hal;
 
 static IRQn_Type to_irqn(USART_TypeDef* inst) noexcept {
-    if (inst == USART1) return USART1_IRQn;
-    else if (inst == USART2) return USART2_IRQn;
-    else if (inst == USART3) return USART3_IRQn;
-    else if (inst == UART4) return UART4_IRQn;
-    else if (inst == UART5) return UART5_IRQn;
-    else if (inst == USART6) return USART6_IRQn;
-    else if (inst == UART7) return UART7_IRQn;
-    else if (inst == UART8) return UART8_IRQn;
-    else if (inst == LPUART1) return LPUART1_IRQn;
+    if (inst == USART1)
+        return USART1_IRQn;
+    else if (inst == USART2)
+        return USART2_IRQn;
+    else if (inst == USART3)
+        return USART3_IRQn;
+    else if (inst == UART4)
+        return UART4_IRQn;
+    else if (inst == UART5)
+        return UART5_IRQn;
+    else if (inst == USART6)
+        return USART6_IRQn;
+    else if (inst == UART7)
+        return UART7_IRQn;
+    else if (inst == UART8)
+        return UART8_IRQn;
+    else if (inst == LPUART1)
+        return LPUART1_IRQn;
     return NonMaskableInt_IRQn;
 }
 
@@ -78,36 +87,48 @@ int uart::start_receive(void* data, std::size_t len) noexcept {
 }
 
 void uart::on_transmit_complete_isr() noexcept {
-    if (observer_) observer_->on_tx_complete();
+    if (observer_)
+        observer_->on_tx_complete();
 }
 
 void uart::on_receive_complete_isr() noexcept {
-    if (!observer_) return;
+    if (!observer_)
+        return;
     observer_->on_rx_complete(rx_buffer_ + rx_read_offset_, rx_buffer_size_ - rx_read_offset_);
     rx_read_offset_ = 0;
 }
 
 void uart::on_receive_idle_isr() noexcept {
-    if (!observer_) return;
+    if (!observer_)
+        return;
     auto* huart = static_cast<UART_HandleTypeDef*>(dev_);
     std::size_t remaining = __HAL_DMA_GET_COUNTER(huart->hdmarx);
     std::size_t write_pos = rx_buffer_size_ - remaining;
-    if (write_pos <= rx_read_offset_) return;
+    if (write_pos <= rx_read_offset_)
+        return;
     observer_->on_rx_idle(rx_buffer_ + rx_read_offset_, write_pos - rx_read_offset_);
     rx_read_offset_ = write_pos;
 }
 
 void uart::on_error_isr() noexcept {
-    if (!observer_) return;
+    if (!observer_)
+        return;
     auto* huart = static_cast<UART_HandleTypeDef*>(dev_);
     uint32_t flags = huart->ErrorCode;
-    errcode err = errcode::ok;
-    if (flags & HAL_UART_ERROR_PE)   err |= errcode::parity;
-    if (flags & HAL_UART_ERROR_NE)   err |= errcode::noise;
-    if (flags & HAL_UART_ERROR_FE)   err |= errcode::framing;
-    if (flags & HAL_UART_ERROR_ORE)  err |= errcode::overflow;
-    if (flags & HAL_UART_ERROR_DMA)  err |= errcode::dma;
-    if (err != errcode::ok) {
+    errcode err = errcode::success;
+    if (flags & HAL_UART_ERROR_PE) {
+        err = errcode::uart_parity;
+    } else if (flags & HAL_UART_ERROR_NE) {
+        err = errcode::uart_noise;
+    } else if (flags & HAL_UART_ERROR_FE) {
+        err = errcode::uart_framing;
+    } else if (flags & HAL_UART_ERROR_ORE) {
+        err = errcode::uart_overflow;
+    } else if (flags & HAL_UART_ERROR_DMA) {
+        err = errcode::uart_dma;
+    }
+
+    if (err != errcode::success) {
         observer_->on_rx_error(err);
     }
 }

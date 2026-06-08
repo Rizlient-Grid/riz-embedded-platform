@@ -1,33 +1,34 @@
 #pragma once
 
-#include <riz/container/detail/lockfree/spsc_byte_ring_queue.h>
+#include <riz/container/lockfree/spsc_raw_byte_ring_buffer.h>
 
 #include <cstddef>
 
 namespace riz::container::lockfree {
 
 template<std::size_t Capacity>
-    requires (Capacity > 1)
-class spsc_byte_buffer : public detail::lockfree::spsc_byte_ring_queue {
+    requires(Capacity > 1)
+class spsc_byte_buffer : public spsc_raw_byte_ring_buffer {
 public:
     spsc_byte_buffer()
-        : detail::lockfree::spsc_byte_ring_queue {storage_} {}
-    
+        : spsc_raw_byte_ring_buffer {storage_} {}
+
     constexpr std::size_t capacity() const noexcept {
         return Capacity;
     }
 
     std::size_t push(const std::byte* data, std::size_t len) noexcept {
-        return detail::lockfree::spsc_byte_ring_queue::push(data, len);
+        return spsc_raw_byte_ring_buffer::push(data, len);
     }
 
     std::size_t pop_front(std::byte* data, std::size_t len) noexcept {
-        return detail::lockfree::spsc_byte_ring_queue::pop_front(data, len);
+        return spsc_raw_byte_ring_buffer::pop_front(data, len);
     }
 
     std::size_t size() const noexcept {
-        return detail::lockfree::spsc_byte_ring_queue::size();
+        return spsc_raw_byte_ring_buffer::size();
     }
+
 private:
     std::byte storage_[Capacity];
 };

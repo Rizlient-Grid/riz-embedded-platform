@@ -24,9 +24,8 @@ using schedulable_task_pair =
     promise::resumable_pair<resumable::schedulable_task, schedulable_task_promise, T>;
 
 template<typename T>
-struct schedulable_task_promise
-    : schedulable_task_promise_base
-    , promise_base<schedulable_task_pair<T>> {
+struct schedulable_task_promise : schedulable_task_promise_base,
+                                  promise_base<schedulable_task_pair<T>> {
     using return_type = schedulable_task_pair<T>::return_type;
     using resumable_type = schedulable_task_pair<T>::resumable_type;
 
@@ -34,9 +33,10 @@ struct schedulable_task_promise
 
     template<typename... Ts>
     schedulable_task_promise(execution::scheduler& sched, Ts&&...)
-        : schedulable_task_promise_base { .schedulable_node = {.executor = &sched,
-              .coro_handle = std::coroutine_handle<schedulable_task_promise>::from_promise(*this)}} {
-    }
+        : schedulable_task_promise_base {
+              .schedulable_node = {.executor = &sched,
+                  .coro_handle =
+                      std::coroutine_handle<schedulable_task_promise>::from_promise(*this)}} {}
 
     void return_value(return_type&& value) {
         result = std::move(value);
@@ -48,16 +48,16 @@ struct schedulable_task_promise
 };
 
 template<>
-struct schedulable_task_promise<void>
-    : schedulable_task_promise_base
-    , promise_base<schedulable_task_pair<void>> {
+struct schedulable_task_promise<void> : schedulable_task_promise_base,
+                                        promise_base<schedulable_task_pair<void>> {
     using resumable_type = schedulable_task_pair<void>::resumable_type;
 
     template<typename... Ts>
     schedulable_task_promise(execution::scheduler& sched, Ts&&...)
-        : schedulable_task_promise_base { .schedulable_node = {.executor = &sched,
-              .coro_handle = std::coroutine_handle<schedulable_task_promise>::from_promise(*this)}} {
-    }
+        : schedulable_task_promise_base {
+              .schedulable_node = {.executor = &sched,
+                  .coro_handle =
+                      std::coroutine_handle<schedulable_task_promise>::from_promise(*this)}} {}
 
     void return_void() noexcept {}
 };

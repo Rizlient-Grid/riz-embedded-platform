@@ -12,9 +12,8 @@
 namespace riz::coro::channel {
 
 template<typename T>
-    requires (std::is_trivially_copyable_v<T>)
-class channel
-    : public basic_channel {
+    requires(std::is_trivially_copyable_v<T>)
+class channel : public basic_channel {
 public:
     channel()
         : basic_channel {sizeof(T)} {}
