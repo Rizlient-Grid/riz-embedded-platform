@@ -1,0 +1,43 @@
+include/riz/hal/uart_observer.h
+  h_b4153c87f08e2b 3
+src/coro/awaiter/basic_channel_read_awaiter.cpp
+  h_b4153c87f08e2b 2
+src/coro/awaiter/basic_channel_write_awaiter.cpp
+  h_b4153c87f08e2b 2
+include/riz/coro/awaiter/uart_transmit_awaiter.h
+  h_b4153c87f08e2b 3-4,8-11,14,38
+src/container/lockfree/spsc_raw_byte_ring_buffer.cpp
+  h_b4153c87f08e2b 1,6,8,28,45
+include/riz/coro/transport/write_acceptor.h
+  h_b4153c87f08e2b 6,25
+include/riz/errcode.h
+  h_b4153c87f08e2b 7-8,13-15
+include/riz/container/lockfree/spsc_byte_buffer.hpp
+  h_b4153c87f08e2b 3,11,14,21,25,29,31
+include/riz/coro/transport/read_acceptor.h
+  h_b4153c87f08e2b 6,25
+include/riz/container/lockfree/spsc_raw_byte_ring_buffer.h
+  h_b4153c87f08e2b 6,8,11-12,16-17,21,27,33
+src/coro/awaiter/uart_transmit_awaiter.cpp
+  h_b4153c87f08e2b 1-20
+include/riz/coro/awaiter/uart_receive_awaiter.h
+  h_b4153c87f08e2b 3-4,8-11,14,38
+src/coro/awaiter/uart_receive_awaiter.cpp
+  h_b4153c87f08e2b 1-20
+src/io/uart_service.cpp
+  h_b4153c87f08e2b 3,6,9,11,16,33-42,46-47,49,51,59,62,66,69-70,74-75,80-81,83-89,91,93-94,102-103,105-106,109,111-119,124,130,133-135,141,143-144
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 4-7,22-24,38-39,43-46,66-70,75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "8015627c75b443099d2f8bae1175d3f87452c43b",
+  "prompts": {},
+  "logical_commit_id": "ceb6b7c661f7efaf140c9eea603caf8b06ad8def",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}

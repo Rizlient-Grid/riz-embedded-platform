@@ -1,0 +1,16 @@
+include/riz/errcode.h
+  h_b4153c87f08e2b 7-8,13-14,20
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 4-7,22-24,40,48-51,71-75,80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "818571b37faceb9635563fa54e986f9a1b169925",
+  "prompts": {},
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
