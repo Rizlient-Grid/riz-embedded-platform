@@ -6,7 +6,7 @@
 
 namespace riz::coro::channel {
 template<typename T>
-    requires (std::is_trivially_copyable_v<T>)
+    requires(std::is_trivially_copyable_v<T>)
 class channel;
 } // namespace riz::coro::channel
 

@@ -1,11 +1,11 @@
-#include <riz/container/detail/lockfree/spsc_byte_ring_queue.h>
+#include <riz/container/lockfree/spsc_raw_byte_ring_buffer.h>
 
 #include <algorithm>
 #include <cstring>
 
-using namespace riz::container::detail::lockfree;
+using namespace riz::container::lockfree;
 
-std::size_t spsc_byte_ring_queue::push(const std::byte* data, std::size_t len) noexcept {
+std::size_t spsc_raw_byte_ring_buffer::push(const std::byte* data, std::size_t len) noexcept {
     if (len == 0) {
         return 0;
     }
@@ -25,7 +25,7 @@ std::size_t spsc_byte_ring_queue::push(const std::byte* data, std::size_t len) n
     return to_write;
 }
 
-std::size_t spsc_byte_ring_queue::pop_front(std::byte* data, std::size_t max_len) noexcept {
+std::size_t spsc_raw_byte_ring_buffer::pop_front(std::byte* data, std::size_t max_len) noexcept {
     if (max_len == 0) {
         return 0;
     }
@@ -42,7 +42,7 @@ std::size_t spsc_byte_ring_queue::pop_front(std::byte* data, std::size_t max_len
     return to_read;
 }
 
-std::size_t spsc_byte_ring_queue::size() const noexcept {
+std::size_t spsc_raw_byte_ring_buffer::size() const noexcept {
     std::size_t tail = tail_.load(std::memory_order_acquire);
     std::size_t head = head_.load(std::memory_order_relaxed);
     return (tail - head + capacity_) % capacity_;

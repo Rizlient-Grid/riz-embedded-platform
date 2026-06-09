@@ -11,13 +11,12 @@
 
 namespace riz::coro::channel {
 
-class basic_channel
-    : public immovable
-    , public transport::read_acceptor
-    , public transport::write_acceptor {
+class basic_channel : public immovable,
+                      public transport::read_acceptor,
+                      public transport::write_acceptor {
 public:
     template<typename T, std::size_t Capacity>
-        requires (std::is_trivially_copyable_v<T>)
+        requires(std::is_trivially_copyable_v<T>)
     basic_channel(T (&storage)[Capacity])
         : buffer_ {storage, sizeof(T), Capacity}
         , entry_size_ {sizeof(T)} {}

@@ -7,8 +7,7 @@
 
 namespace riz::coro::awaiter {
 
-class schedulable_awaiter_node
-    : public container::intrusive::fifo_queue::node_type {
+class schedulable_awaiter_node : public container::intrusive::fifo_queue::node_type {
 public:
     void on_resume(errcode status) noexcept {
         status_ = status;
@@ -20,4 +19,4 @@ protected:
     errcode status_ {errcode::success};
 };
 
-} // riz::coro::awaiter
+} // namespace riz::coro::awaiter

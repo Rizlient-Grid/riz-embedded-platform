@@ -3,7 +3,7 @@
 #include <riz/container/intrusive/fifo_queue.h>
 #include <riz/coro/awaiter/schedulable_awaiter_node.h>
 
-namespace riz::transport {
+namespace riz::coro::transport {
 
 class write_acceptor {
 public:
@@ -22,4 +22,4 @@ protected:
     container::intrusive::fifo_queue pending_writers_;
 };
 
-} // namespace riz::transport
+} // namespace riz::coro::transport

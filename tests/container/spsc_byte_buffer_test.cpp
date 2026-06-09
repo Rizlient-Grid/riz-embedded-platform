@@ -195,8 +195,7 @@ TEST_F(SpscByteBufferTest, ConcurrentSpsc) {
             std::byte out = std::byte {0x00};
             std::size_t read = ring.pop_front(&out, 1);
             if (read > 0) {
-                EXPECT_EQ(out, static_cast<std::byte>(consumed & 0xFF))
-                    << "consumed=" << consumed;
+                EXPECT_EQ(out, static_cast<std::byte>(consumed & 0xFF)) << "consumed=" << consumed;
                 ++consumed;
             }
         }
@@ -272,11 +271,10 @@ TEST_F(SpscByteBufferTest, PushExactRemainingSpace) {
 TEST_F(SpscByteBufferTest, MultiplePartialWritesFillBuffer) {
     static constexpr std::size_t kUsable = kCapacity - 1;
     const std::byte pattern[] = {std::byte {0xA0}, std::byte {0xA1}, std::byte {0xA2},
-        std::byte {0xA3}, std::byte {0xA4}, std::byte {0xA5}, std::byte {0xA6},
-        std::byte {0xA7}, std::byte {0xA8}, std::byte {0xA9}, std::byte {0xAA},
-        std::byte {0xAB}, std::byte {0xAC}, std::byte {0xAD}, std::byte {0xAE},
-        std::byte {0xAF}, std::byte {0xB0}, std::byte {0xB1}, std::byte {0xB2},
-        std::byte {0xB3}};
+        std::byte {0xA3}, std::byte {0xA4}, std::byte {0xA5}, std::byte {0xA6}, std::byte {0xA7},
+        std::byte {0xA8}, std::byte {0xA9}, std::byte {0xAA}, std::byte {0xAB}, std::byte {0xAC},
+        std::byte {0xAD}, std::byte {0xAE}, std::byte {0xAF}, std::byte {0xB0}, std::byte {0xB1},
+        std::byte {0xB2}, std::byte {0xB3}};
 
     std::size_t total_written = 0;
     while (total_written < sizeof(pattern)) {
@@ -428,8 +426,7 @@ TEST_F(SpscByteBufferTest, ConcurrentSpscBatched) {
             }
             for (std::size_t i = 0; i < kBatchSize; ++i) {
                 auto expected = static_cast<std::byte>((b * kBatchSize + i) & 0xFF);
-                EXPECT_EQ(batch[i], expected)
-                    << "batch=" << b << " i=" << i;
+                EXPECT_EQ(batch[i], expected) << "batch=" << b << " i=" << i;
             }
             ++b;
         }

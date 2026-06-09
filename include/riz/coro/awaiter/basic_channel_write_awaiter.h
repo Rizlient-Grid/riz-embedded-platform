@@ -2,7 +2,6 @@
 
 #include "schedulable_awaiter_node.h"
 
-#include <riz/coro/promise/schedulable_task_promise_base.h>
 #include <riz/errcode.h>
 
 #include <coroutine>
@@ -13,7 +12,7 @@ class basic_channel;
 
 namespace riz::coro::awaiter {
 
-class basic_channel_write_awaiter : public schedulable_awaiter_node{
+class basic_channel_write_awaiter : public schedulable_awaiter_node {
 public:
     basic_channel_write_awaiter(channel::basic_channel& chan, const void* value)
         : value_ {value}

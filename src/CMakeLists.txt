@@ -1,6 +1,6 @@
 add_library(riz_core OBJECT
     container/raw_ring_queue.cpp
-    container/detail/lockfree/spsc_byte_ring_queue.cpp
+    container/lockfree/spsc_raw_byte_ring_buffer.cpp
     container/intrusive/delta_queue.cpp
     container/intrusive/fifo_queue.cpp
     coro/channel/basic_channel.cpp
