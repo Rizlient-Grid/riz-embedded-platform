@@ -1,0 +1,23 @@
+.clang-format
+  h_b4153c87f08e2b 14
+src/port/stm32/uart.cpp
+  h_b4153c87f08e2b 89-93,96-97,99-101,103-105
+include/riz/hal/uart.h
+  h_b4153c87f08e2b 19,30
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 26-28,30-31,38-44,78
+src/io/uart_service.cpp
+  h_b4153c87f08e2b 45-67,154,163
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7de29fc5ddea5b6f8016407242b946a251a0f5e2",
+  "prompts": {},
+  "logical_commit_id": "b314bd6eb9ead40c939f1354df5a13208b779b4c",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
