@@ -1,0 +1,17 @@
+src/console/line_editor.cpp
+  h_b4153c87f08e2b 1-32
+include/riz/console/line_editor.h
+  h_b4153c87f08e2b 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7d5e5fe5ec4c47ad36a93ba2bc0e06d5d32dc30d",
+  "prompts": {},
+  "logical_commit_id": "7d5e5fe5ec4c47ad36a93ba2bc0e06d5d32dc30d",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
