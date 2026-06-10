@@ -42,6 +42,29 @@ std::size_t uart_service::try_drain_transmitter(
     return consumed;
 }
 
+void uart_service::start() noexcept {
+    dev_.start_receive(rx_buffer_, rx_buffer_size_);
+    dev_.enable_irq();
+}
+
+void uart_service::stop() noexcept {
+    dev_.disable_irq();
+    while (auto* r = dequeue_pending_read()) {
+        r->on_resume(errcode::canceled);
+    }
+    while (auto* w = dequeue_pending_write()) {
+        w->on_resume(errcode::canceled);
+    }
+    if (active_read_awaiter_ != nullptr) {
+        complete_active_read(errcode::canceled);
+    }
+    if (active_write_awaiter_ != nullptr) {
+        dev_.abort_transmit();
+        write_ready_.store(true, std::memory_order_release);
+        complete_active_write(errcode::canceled);
+    }
+}
+
 void uart_service::run() noexcept {
     process_write();
     process_read();
@@ -117,12 +140,8 @@ void uart_service::process_read() noexcept {
 
 void uart_service::process_error() noexcept {
     errcode status = hw_status_.exchange(errcode::success, std::memory_order_acquire);
-    if (status == errcode::success) {
-        return;
-    }
-    if (active_read_awaiter_ != nullptr) {
-        complete_active_read(status);
-    }
+    if (status == errcode::success) { return; }
+    if (active_read_awaiter_ != nullptr) { complete_active_read(status); }
 }
 
 void uart_service::on_tx_complete() noexcept {
@@ -132,8 +151,7 @@ void uart_service::on_tx_complete() noexcept {
 void uart_service::on_tx_timeout(timer::timer_node* tn) noexcept {
     auto* node = static_cast<tx_timeout_node*>(tn);
     auto& self = *node->self;
-    if (!self.active_write_awaiter_)
-        return;
+    if (self.active_write_awaiter_ == nullptr) { return; }
     self.dev_.abort_transmit();
     self.write_ready_.store(true, std::memory_order_release);
     self.complete_active_write(errcode::timeout);
@@ -142,19 +160,29 @@ void uart_service::on_tx_timeout(timer::timer_node* tn) noexcept {
 void uart_service::on_rx_timeout(timer::timer_node* tn) noexcept {
     auto* node = static_cast<rx_timeout_node*>(tn);
     auto& self = *node->self;
-    if (!self.active_read_awaiter_)
-        return;
+    if (self.active_read_awaiter_ == nullptr) { return; }
     self.complete_active_read(errcode::timeout);
 }
 
-void uart_service::on_rx_complete(const std::byte* data, std::size_t len) noexcept {
-    rx_ring_buffer_.push(data, len);
+void uart_service::on_rx_complete() noexcept {
+    std::byte* data = rx_buffer_ + rx_read_offset_;
+    const std::size_t size = rx_buffer_size_ - rx_read_offset_;
+    rx_ring_buffer_.push(data, size);
+    rx_read_offset_ = 0;
+    
 }
 
-void uart_service::on_rx_idle(const std::byte* data, std::size_t len) noexcept {
-    rx_ring_buffer_.push(data, len);
+void uart_service::on_rx_idle() noexcept {
+    std::size_t remaining = dev_.get_rx_transfer_remaining();
+    std::size_t write_pos = rx_buffer_size_ - remaining;
+    if (write_pos <= rx_read_offset_) { return; }
+    std::byte* data = rx_buffer_ + rx_read_offset_;
+    std::size_t size = write_pos - rx_read_offset_;
+    rx_ring_buffer_.push(data, size);
+    rx_read_offset_ = write_pos;
 }
 
-void uart_service::on_rx_error(errcode err) noexcept {
-    hw_status_.store(err, std::memory_order_release);
+void uart_service::on_rx_error() noexcept {
+    errcode status = dev_.get_and_clear_hw_error();
+    hw_status_.store(status, std::memory_order_release);
 }
