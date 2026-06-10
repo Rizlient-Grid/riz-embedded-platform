@@ -2,8 +2,6 @@
 
 #include <riz/constraints.h>
 
-#include <type_traits>
-
 namespace riz::pattern {
 
 template<typename T>

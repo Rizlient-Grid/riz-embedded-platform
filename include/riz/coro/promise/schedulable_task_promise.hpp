@@ -38,6 +38,13 @@ struct schedulable_task_promise : schedulable_task_promise_base,
                   .coro_handle =
                       std::coroutine_handle<schedulable_task_promise>::from_promise(*this)}} {}
 
+    template<typename Self, typename... Ts>
+    schedulable_task_promise(Self&&, execution::scheduler& sched, Ts&&...)
+        : schedulable_task_promise_base {
+              .schedulable_node = {.executor = &sched,
+                  .coro_handle =
+                      std::coroutine_handle<schedulable_task_promise>::from_promise(*this)}} {}
+
     void return_value(return_type&& value) {
         result = std::move(value);
     }
@@ -54,6 +61,13 @@ struct schedulable_task_promise<void> : schedulable_task_promise_base,
 
     template<typename... Ts>
     schedulable_task_promise(execution::scheduler& sched, Ts&&...)
+        : schedulable_task_promise_base {
+              .schedulable_node = {.executor = &sched,
+                  .coro_handle =
+                      std::coroutine_handle<schedulable_task_promise>::from_promise(*this)}} {}
+
+    template<typename Self, typename... Ts>
+    schedulable_task_promise(Self&&, execution::scheduler& sched, Ts&&...)
         : schedulable_task_promise_base {
               .schedulable_node = {.executor = &sched,
                   .coro_handle =
