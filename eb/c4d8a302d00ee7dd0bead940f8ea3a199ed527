@@ -1,0 +1,21 @@
+src/console/argument_parser.cpp
+  h_b4153c87f08e2b 1-26
+include/riz/console/argument_parser.h
+  h_b4153c87f08e2b 1-24
+include/riz/console/line_editor.h
+  h_b4153c87f08e2b 13,19-20
+src/console/line_editor.cpp
+  h_b4153c87f08e2b 6,8-9,14,22,24,27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ebc4d8a302d00ee7dd0bead940f8ea3a199ed527",
+  "prompts": {},
+  "logical_commit_id": "ebc4d8a302d00ee7dd0bead940f8ea3a199ed527",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
