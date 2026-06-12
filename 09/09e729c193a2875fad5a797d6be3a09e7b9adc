@@ -1,0 +1,27 @@
+include/riz/console/console.h
+  h_b4153c87f08e2b 3-10,12-48
+include/riz/container/byte_ring_buffer.h
+  h_b4153c87f08e2b 1-30
+src/container/byte_ring_buffer.cpp
+  h_b4153c87f08e2b 1-43
+src/console/console.cpp
+  h_b4153c87f08e2b 1-61
+include/riz/coro/promise/schedulable_task_promise.hpp
+  h_b4153c87f08e2b 41-47,69-70
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 5-6
+include/riz/coro/awaiter/yield_awaiter.h
+  h_b4153c87f08e2b 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0909e729c193a2875fad5a797d6be3a09e7b9adc",
+  "prompts": {},
+  "logical_commit_id": "0909e729c193a2875fad5a797d6be3a09e7b9adc",
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
