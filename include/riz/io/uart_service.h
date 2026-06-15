@@ -20,10 +20,10 @@ class uart_service : public immovable,
                      public coro::transport::read_acceptor,
                      public coro::transport::write_acceptor {
 public:
-	template<std::size_t N, std::size_t N2>
+    template<std::size_t N, std::size_t N2>
     uart_service(hal::uart& dev, std::byte (&storage)[N], std::byte (&storage2)[N2])
         : dev_ {dev}
-	    , rx_ring_buffer_ {storage}
+        , rx_ring_buffer_ {storage}
         , rx_buffer_ {storage2}
         , rx_buffer_size_ {N2} {}
 

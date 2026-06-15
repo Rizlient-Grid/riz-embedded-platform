@@ -10,7 +10,8 @@ namespace riz::hal {
 
 class uart : public immovable {
 public:
-    enum class transfer_mode : std::uint8_t {
+    enum class transfer_mode : std::uint8_t
+    {
         dma,
         it
     };

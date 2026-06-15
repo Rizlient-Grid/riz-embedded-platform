@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cstring>
 
-
 using namespace riz::container;
 
 std::size_t byte_ring_buffer::push(const std::byte* data, std::size_t len) noexcept {

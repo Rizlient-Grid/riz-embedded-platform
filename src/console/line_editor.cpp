@@ -3,14 +3,18 @@
 using namespace riz::console;
 
 bool line_editor::append(char c) noexcept {
-    if (pos_ >= (capacity_ - 1)) { return false; }
+    if (pos_ >= (capacity_ - 1)) {
+        return false;
+    }
     buffer_[pos_++] = c;
     buffer_[pos_] = '\0';
     return true;
 }
 
 bool line_editor::backspace() noexcept {
-    if (pos_ == 0) { return false; }
+    if (pos_ == 0) {
+        return false;
+    }
     buffer_[--pos_] = '\0';
     return true;
 }

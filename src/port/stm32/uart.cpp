@@ -97,10 +97,20 @@ riz::errcode uart::get_and_clear_hw_error() noexcept {
     auto huart = static_cast<UART_HandleTypeDef*>(dev_);
     uint32_t flags = huart->ErrorCode;
     huart->ErrorCode = HAL_UART_ERROR_NONE;
-    if (flags & HAL_UART_ERROR_DMA) { return errcode::uart_dma; }
-    if (flags & HAL_UART_ERROR_ORE) { return errcode::uart_overflow; }
-    if (flags & HAL_UART_ERROR_FE) { return errcode::uart_framing; }
-    if (flags & HAL_UART_ERROR_PE) { return errcode::uart_parity; }
-    if (flags & HAL_UART_ERROR_NE) { return errcode::uart_noise; }
+    if (flags & HAL_UART_ERROR_DMA) {
+        return errcode::uart_dma;
+    }
+    if (flags & HAL_UART_ERROR_ORE) {
+        return errcode::uart_overflow;
+    }
+    if (flags & HAL_UART_ERROR_FE) {
+        return errcode::uart_framing;
+    }
+    if (flags & HAL_UART_ERROR_PE) {
+        return errcode::uart_parity;
+    }
+    if (flags & HAL_UART_ERROR_NE) {
+        return errcode::uart_noise;
+    }
     return errcode::success;
 }

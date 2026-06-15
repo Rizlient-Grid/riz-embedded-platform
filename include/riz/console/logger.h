@@ -5,11 +5,11 @@
 #include <riz/pattern/singleton.hpp>
 
 #define TRACE(...) LOG_IMPL("T", __VA_ARGS__)
-#define INFO(...)  LOG_IMPL("I", __VA_ARGS__)
+#define INFO(...) LOG_IMPL("I", __VA_ARGS__)
 #define ERROR(...) LOG_IMPL("E", __VA_ARGS__)
-#define LOG_IMPL(tag, fmt, ...) \
-    do { \
-        riz::console::logger::instance().log(tag " " fmt "\n\r" __VA_OPT__(,) __VA_ARGS__); \
+#define LOG_IMPL(tag, fmt, ...)                                                                    \
+    do {                                                                                           \
+        riz::console::logger::instance().log(tag " " fmt "\n\r" __VA_OPT__(, ) __VA_ARGS__);       \
     } while (0)
 
 namespace riz::console {
