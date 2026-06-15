@@ -1,0 +1,40 @@
+src/io/uart_service.cpp
+  h_b4153c87f08e2b 1-3,11,96,130
+src/console/argument_parser.cpp
+  h_b4153c87f08e2b 1-26
+include/riz/console/line_editor.h
+  h_b4153c87f08e2b 1-27
+src/console/console.cpp
+  h_b4153c87f08e2b 1-61
+src/console/line_editor.cpp
+  h_b4153c87f08e2b 1-29
+include/riz/console/console.h
+  h_b4153c87f08e2b 3-10,12-48
+include/riz/coro/awaiter/yield_awaiter.h
+  h_b4153c87f08e2b 1-26
+include/riz/io/uart_service.h
+  h_b4153c87f08e2b 5-6
+include/riz/console/argument_parser.h
+  h_b4153c87f08e2b 1-24
+include/riz/coro/promise/schedulable_task_promise.hpp
+  h_b4153c87f08e2b 41-47,69-70
+include/riz/console/logger.h
+  h_b4153c87f08e2b 1-37
+include/riz/container/byte_ring_buffer.h
+  h_b4153c87f08e2b 1-30
+include/riz/io/const.h
+  h_b4153c87f08e2b 1-10
+src/container/byte_ring_buffer.cpp
+  h_b4153c87f08e2b 1-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ddb278a9cf5b9f07d82035dc02d9dd8be41f23e8",
+  "prompts": {},
+  "humans": {
+    "h_b4153c87f08e2b": {
+      "author": "ohyusheng <humbleoh@gmail.com>"
+    }
+  }
+}
