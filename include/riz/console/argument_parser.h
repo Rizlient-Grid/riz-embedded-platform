@@ -9,7 +9,7 @@ public:
     argument_parser(const char** argv_storage, std::size_t max_args)
         : argv_ {argv_storage}
         , max_args_ {max_args} {}
-    
+
     int parse(char* line) noexcept;
 
     int argc() const noexcept;
@@ -21,4 +21,4 @@ private:
     const std::size_t max_args_ {0};
 };
 
-} // riz::console
+} // namespace riz::console

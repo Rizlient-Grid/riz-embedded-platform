@@ -1,6 +1,6 @@
 #include <riz/coro/awaiter/basic_channel_read_awaiter.h>
-#include <riz/coro/promise/schedulable_task_promise_base.h>
 #include <riz/coro/channel/basic_channel.h>
+#include <riz/coro/promise/schedulable_task_promise_base.h>
 
 using namespace riz::coro::awaiter;
 

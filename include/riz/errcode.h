@@ -12,11 +12,11 @@ enum errcode : std::int8_t
     empty = -3,
     canceled = -4,
     timeout = -5,
-	uart_parity,
-	uart_noise,
-	uart_framing,
-	uart_overflow,
-	uart_dma,
+    uart_parity,
+    uart_noise,
+    uart_framing,
+    uart_overflow,
+    uart_dma,
     unknown_hw_error
 };
 

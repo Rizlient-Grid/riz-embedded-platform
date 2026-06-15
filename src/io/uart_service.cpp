@@ -33,8 +33,7 @@ bool uart_service::try_fill_receiver(coro::awaiter::uart_receive_awaiter& receiv
     return (rem == 0);
 }
 
-std::size_t uart_service::try_drain_transmitter(
-    coro::awaiter::uart_transmit_awaiter& transmitter,
+std::size_t uart_service::try_drain_transmitter(coro::awaiter::uart_transmit_awaiter& transmitter,
     const std::byte*& data, std::size_t chunk_size) noexcept {
     std::size_t rem = transmitter.len_ - transmitter.offset_;
     std::size_t consumed = std::min(rem, chunk_size);
@@ -143,8 +142,12 @@ void uart_service::process_read() noexcept {
 
 void uart_service::process_error() noexcept {
     errcode status = hw_status_.exchange(errcode::success, std::memory_order_acquire);
-    if (status == errcode::success) { return; }
-    if (active_read_awaiter_ != nullptr) { complete_active_read(status); }
+    if (status == errcode::success) {
+        return;
+    }
+    if (active_read_awaiter_ != nullptr) {
+        complete_active_read(status);
+    }
 }
 
 void uart_service::on_tx_complete() noexcept {
@@ -154,7 +157,9 @@ void uart_service::on_tx_complete() noexcept {
 void uart_service::on_tx_timeout(timer::timer_node* tn) noexcept {
     auto* node = static_cast<tx_timeout_node*>(tn);
     auto& self = *node->self;
-    if (self.active_write_awaiter_ == nullptr) { return; }
+    if (self.active_write_awaiter_ == nullptr) {
+        return;
+    }
     self.dev_.abort_transmit();
     self.write_ready_.store(true, std::memory_order_release);
     self.complete_active_write(errcode::timeout);
@@ -163,7 +168,9 @@ void uart_service::on_tx_timeout(timer::timer_node* tn) noexcept {
 void uart_service::on_rx_timeout(timer::timer_node* tn) noexcept {
     auto* node = static_cast<rx_timeout_node*>(tn);
     auto& self = *node->self;
-    if (self.active_read_awaiter_ == nullptr) { return; }
+    if (self.active_read_awaiter_ == nullptr) {
+        return;
+    }
     self.complete_active_read(errcode::timeout);
 }
 
@@ -172,13 +179,14 @@ void uart_service::on_rx_complete() noexcept {
     const std::size_t size = rx_buffer_size_ - rx_read_offset_;
     rx_ring_buffer_.push(data, size);
     rx_read_offset_ = 0;
-    
 }
 
 void uart_service::on_rx_idle() noexcept {
     std::size_t remaining = dev_.get_rx_transfer_remaining();
     std::size_t write_pos = rx_buffer_size_ - remaining;
-    if (write_pos <= rx_read_offset_) { return; }
+    if (write_pos <= rx_read_offset_) {
+        return;
+    }
     std::byte* data = rx_buffer_ + rx_read_offset_;
     std::size_t size = write_pos - rx_read_offset_;
     rx_ring_buffer_.push(data, size);

@@ -57,7 +57,7 @@ riz::coro::resumable::schedulable_task<void> console::dispatch(
     coro::execution::scheduler& sched, int argc, const char** argv) {
     for (std::size_t i = 0; i < max_commands_; ++i) {
         if (strcmp(commands_[i].name, argv[0]) == 0) {
-        	INFO("Command: %s", argv[0]);
+            INFO("Command: %s", argv[0]);
             co_await commands_[i].handler(sched, argc, argv);
             co_return;
         }

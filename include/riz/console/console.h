@@ -20,9 +20,11 @@ struct command_entry {
 
 class console : public immovable {
 public:
-    template<std::size_t CmdCount, std::size_t LineSize, std::size_t ArgvSize, std::size_t WriteBufferSize>
+    template<std::size_t CmdCount, std::size_t LineSize, std::size_t ArgvSize,
+        std::size_t WriteBufferSize>
     console(io::uart_service& serial, command_entry (&commands)[CmdCount],
-        char (&line_buf)[LineSize], const char* (&argv_buf)[ArgvSize], std::byte (&WriteBuffer)[WriteBufferSize])
+        char (&line_buf)[LineSize], const char* (&argv_buf)[ArgvSize],
+        std::byte (&WriteBuffer)[WriteBufferSize])
         : serial_ {serial}
         , editor_ {line_buf}
         , parser_ {argv_buf, ArgvSize}
