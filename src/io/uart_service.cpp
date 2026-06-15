@@ -1,19 +1,22 @@
+#include <riz/io/const.h>
+#include <riz/io/uart_service.h>
+
 #include <riz/coro/awaiter/uart_receive_awaiter.h>
 #include <riz/coro/awaiter/uart_transmit_awaiter.h>
-#include <riz/io/uart_service.h>
 #include <riz/timer/timer_service.h>
 
 #include <algorithm>
 #include <cassert>
 
+using namespace riz;
 using namespace riz::io;
 
-riz::coro::awaiter::uart_receive_awaiter uart_service::receive(
+coro::awaiter::uart_receive_awaiter uart_service::receive(
     void* data, std::size_t len, std::uint32_t timeout_ms) noexcept {
     return {*this, data, len, timeout_ms};
 }
 
-riz::coro::awaiter::uart_transmit_awaiter uart_service::transmit(
+coro::awaiter::uart_transmit_awaiter uart_service::transmit(
     const void* data, std::size_t len, std::uint32_t timeout_ms) noexcept {
     return {*this, data, len, timeout_ms};
 }
@@ -90,7 +93,7 @@ void uart_service::process_write() noexcept {
             auto s = static_cast<awaiter*>(dequeue_pending_write());
             if (s != nullptr) {
                 active_write_awaiter_ = s;
-                if (s->timeout_ms_ > 0) {
+                if (s->timeout_ms_ != wait_forever) {
                     tx_timer_.self = this;
                     tx_timer_.on_expire = &on_tx_timeout;
                     timer::timer_service::instance().submit_ms(s->timeout_ms_, tx_timer_);
@@ -124,7 +127,7 @@ void uart_service::process_read() noexcept {
             if (try_fill_receiver(*r)) {
                 r->on_resume(errcode::success);
                 active_read_awaiter_ = nullptr;
-            } else if (r->timeout_ms_ > 0) {
+            } else if (r->timeout_ms_ != wait_forever) {
                 rx_timer_.self = this;
                 rx_timer_.on_expire = &on_rx_timeout;
                 timer::timer_service::instance().submit_ms(r->timeout_ms_, rx_timer_);

@@ -2,6 +2,8 @@
 
 #include <riz/constraints.h>
 #include <riz/container/lockfree/spsc_raw_byte_ring_buffer.h>
+#include <riz/coro/awaiter/uart_receive_awaiter.h>
+#include <riz/coro/awaiter/uart_transmit_awaiter.h>
 #include <riz/coro/transport/read_acceptor.h>
 #include <riz/coro/transport/write_acceptor.h>
 #include <riz/errcode.h>
@@ -11,11 +13,6 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
-
-namespace riz::coro::awaiter {
-class uart_transmit_awaiter;
-class uart_receive_awaiter;
-} // namespace riz::coro::awaiter
 
 namespace riz::io {
 
